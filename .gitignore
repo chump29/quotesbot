@@ -1,0 +1,4 @@
+.env.local
+.vscode/
+db/quotesbot.db*
+node_modules/

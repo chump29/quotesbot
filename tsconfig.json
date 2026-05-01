@@ -1,0 +1,10 @@
+{
+  "extends": "./node_modules/@postfmly/config/tsconfig",
+  "compilerOptions": {
+    "types": [
+      "bun",
+      "ms",
+      "pluralize"
+    ]
+  }
+}

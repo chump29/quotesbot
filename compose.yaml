@@ -1,0 +1,23 @@
+services:
+  quotesbot:
+    container_name: quotesbot
+    image: git.postfmly.com/admin/quotesbot:arm64
+    restart: unless-stopped
+    ports:
+      - "8005:8005"
+    volumes:
+      - db:/app/db
+    environment:
+      - TZ=America/Chicago
+    env_file: .env
+    labels:
+      - wud.display.name=QuotesBot
+      - homepage.group=Personal
+      - homepage.name=QuotesBot
+      - homepage.icon=https://quotesbot.postfmly.com/quotesbot.webp
+
+volumes:
+  db:
+
+
+networks: {}
