@@ -73,6 +73,8 @@ const newQuote = async (): Promise<void> => {
 }
 
 const startQuotes = async (): Promise<void> => {
+  await newQuote()
+
   ID = setTimeout(newQuote, TIMEOUT)
 
   RUNNING = true
