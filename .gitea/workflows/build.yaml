@@ -7,6 +7,9 @@ on:
       - main
   workflow_dispatch:
 
+env:
+  BUN_INSTALL_CACHE_DIR: /tmp/.bun-cache
+
 jobs:
   check:
     runs-on: amd64
@@ -19,8 +22,6 @@ jobs:
 
       - name: Get Bun cache
         uses: actions/cache@v5
-        env:
-          BUN_INSTALL_CACHE_DIR: /tmp/.bun-cache
         with:
           key: bun-${{ github.event.repository.name }}-${{ hashFiles('./bun.lock') }}
           path: ${{ env.BUN_INSTALL_CACHE_DIR }}
