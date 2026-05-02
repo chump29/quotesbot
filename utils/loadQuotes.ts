@@ -65,7 +65,7 @@ const newQuote = async (): Promise<void> => {
   }
 
   await CHANNEL.send({
-    content: `-# > ${quote.quote} — ${quote.author}`,
+    content: `-# > "${quote.quote}" — ${quote.author}`,
     flags: MessageFlags.SuppressNotifications
   }).then((): void => {
     ID = setTimeout(newQuote, TIMEOUT)

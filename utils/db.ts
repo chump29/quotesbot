@@ -13,7 +13,9 @@ let SQLITE: Database | null = null
 let DB: SQLiteBunDatabase | null = null
 
 const loadQuotes = async (): Promise<string> => {
-  const allQuotes: IQuotes[] = await ConvertCsvToJson.getJsonFromCsvAsync(`${import.meta.dirname}/quotes.csv`)
+  const allQuotes: IQuotes[] = await ConvertCsvToJson.supportQuotedField(true).getJsonFromCsvAsync(
+    `${import.meta.dirname}/quotes.csv`
+  )
 
   if (!allQuotes) {
     throw new Error("Invalid allQuotes")
