@@ -42,7 +42,7 @@ const invoke = async (interaction: ChatInputCommandInteraction): Promise<void> =
         .setFields({
           inline: true,
           name: "Total Quotes",
-          value: COUNT
+          value: COUNT.toLocaleString()
         } as APIEmbedField)
         .setFooter({
           text: "By Chris Post"

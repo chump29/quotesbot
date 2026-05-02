@@ -59,7 +59,7 @@
 
     "@discordjs/ws": ["@discordjs/ws@1.2.3", "https://npm.postfmly.com/@discordjs/ws/-/ws-1.2.3.tgz", { "dependencies": { "@discordjs/collection": "^2.1.0", "@discordjs/rest": "^2.5.1", "@discordjs/util": "^1.1.0", "@sapphire/async-queue": "^1.5.2", "@types/ws": "^8.5.10", "@vladfrangu/async_event_emitter": "^2.2.4", "discord-api-types": "^0.38.1", "tslib": "^2.6.2", "ws": "^8.17.0" } }, "sha512-wPlQDxEmlDg5IxhJPuxXr3Vy9AjYq5xCvFWGJyD7w7Np8ZGu+Mc+97LCoEc/+AYCo2IDpKioiH0/c/mj5ZR9Uw=="],
 
-    "@postfmly/config": ["@postfmly/config@1.0.18", "https://npm.postfmly.com/@postfmly/config/-/config-1.0.18.tgz", { "bin": { "config-init": "bin/init" } }, "sha512-/yWJYV9cX1dJmVB6iC//QfnO5qeOwZ7gnVTSSNLBTxUayJ0BAd9PiRGlDfZld04QQ7rpEmk9+ED2cdDNKSyoTQ=="],
+    "@postfmly/config": ["@postfmly/config@1.1.0", "https://npm.postfmly.com/@postfmly/config/-/config-1.1.0.tgz", { "bin": { "config-init": "bin/init" } }, "sha512-Fc+Tjo6E8PxOSzqjhKPy5nXIluHAydeBnJrL2JYQWbKVC0jHI9Fuy2iUtB9HrJEsJHL3di5mjGW+vZAY6aA8Dg=="],
 
     "@sapphire/async-queue": ["@sapphire/async-queue@1.5.5", "https://npm.postfmly.com/@sapphire/async-queue/-/async-queue-1.5.5.tgz", {}, "sha512-cvGzxbba6sav2zZkH8GPf2oGk9yYoD5qrNWdu9fRehifgnFZJMV+nuy2nON2roRO4yQQ+v7MK/Pktl/HgfsUXg=="],
 

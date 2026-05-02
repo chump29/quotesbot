@@ -12,7 +12,7 @@ import { info } from "./logger.ts"
 let SQLITE: Database | null = null
 let DB: SQLiteBunDatabase | null = null
 
-const loadQuotes = async (): Promise<string> => {
+const loadQuotes = async (): Promise<void> => {
   const allQuotes: IQuotes[] = await ConvertCsvToJson.supportQuotedField(true).getJsonFromCsvAsync(
     `${import.meta.dirname}/quotes.csv`
   )
@@ -33,13 +33,9 @@ const loadQuotes = async (): Promise<string> => {
     throw new Error("Invalid rows")
   }
 
-  const count: string = pluralize("quote", rows.length, true)
-
   if (Bun.env.DEBUG) {
-    info(`Inserted ${count}`)
+    info(`Inserted ${rows.length.toLocaleString()} ${pluralize("quote", rows.length)}`)
   }
-
-  return count
 }
 
 const openDatabase = async (): Promise<void> => {

@@ -1,6 +1,7 @@
 import { type Channel, type Client, MessageFlags, type TextChannel } from "discord.js"
 
 import ms, { type StringValue } from "ms"
+import pluralize from "pluralize"
 
 import { type IQuotes } from "../db/schema.ts"
 import { getQuotes } from "./db.ts"
@@ -9,9 +10,8 @@ import { info } from "./logger.ts"
 let CLIENT: Client | null = null
 let CHANNEL: TextChannel | null = null
 
-let COUNT: string = ""
-
 let QUOTES: IQuotes[] = []
+let COUNT: number = 0
 
 let RUNNING: boolean = false
 
@@ -32,6 +32,11 @@ const getChannel = async (): Promise<TextChannel> => {
   })
 }
 
+const refreshQuotes = async (): Promise<void> => {
+  QUOTES = await getQuotes()
+  COUNT = QUOTES.length
+}
+
 const loadSettings = async (client: Client): Promise<void> => {
   if (!client) {
     throw new Error("Invalid client")
@@ -40,13 +45,12 @@ const loadSettings = async (client: Client): Promise<void> => {
   CLIENT = client
   CHANNEL = await getChannel()
 
-  QUOTES = await getQuotes()
-  COUNT = QUOTES.length.toLocaleString()
+  await refreshQuotes()
 
   TIMEOUT = ms((Bun.env.TIMEOUT || "12h") as StringValue)
 
   if (Bun.env.DEBUG) {
-    info(`Loaded ${COUNT} quotes`)
+    info(`Loaded ${COUNT.toLocaleString()} ${pluralize("quote", COUNT)}`)
   }
 }
 
@@ -96,4 +100,4 @@ const stopQuotes = async (): Promise<void> => {
   }
 }
 
-export { COUNT, loadSettings, newQuote, RUNNING, startQuotes, stopQuotes }
+export { COUNT, loadSettings, newQuote, RUNNING, refreshQuotes, startQuotes, stopQuotes }
