@@ -1,4 +1,4 @@
-import { info } from "./logger.ts"
+import { info } from "@postfmly/logger"
 
 let SERVER: Bun.Server<undefined> | null = null
 

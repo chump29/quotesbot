@@ -1,8 +1,9 @@
 import { ActivityType, Client, GatewayIntentBits } from "discord.js"
 
+import { info } from "@postfmly/logger"
+
 import { closeDatabase } from "./db.ts"
 import { RUNNING, stopQuotes } from "./loadQuotes.ts"
-import { info } from "./logger.ts"
 import { SERVER } from "./logo.ts"
 
 let CLIENT: Client | null = null

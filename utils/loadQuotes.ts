@@ -1,11 +1,11 @@
 import { type Channel, type Client, MessageFlags, type TextChannel } from "discord.js"
 
+import { info } from "@postfmly/logger"
 import ms, { type StringValue } from "ms"
 import pluralize from "pluralize"
 
 import { type IQuotes } from "../db/schema.ts"
 import { getQuotes } from "./db.ts"
-import { info } from "./logger.ts"
 
 let CLIENT: Client | null = null
 let CHANNEL: TextChannel | null = null

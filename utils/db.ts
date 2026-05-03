@@ -2,12 +2,12 @@ import { mkdir } from "node:fs/promises"
 
 import { Database, SQLiteError } from "bun:sqlite"
 
+import { info } from "@postfmly/logger"
 import ConvertCsvToJson from "convert-csv-to-json"
 import { drizzle, type SQLiteBunDatabase } from "drizzle-orm/bun-sqlite"
 import pluralize from "pluralize"
 
 import { type IQuotes, quotes } from "../db/schema.ts"
-import { info } from "./logger.ts"
 
 let SQLITE: Database | null = null
 let DB: SQLiteBunDatabase | null = null
