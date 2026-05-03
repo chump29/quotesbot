@@ -34,7 +34,7 @@ const loadQuotes = async (): Promise<void> => {
   }
 
   if (Bun.env.DEBUG) {
-    info(`Inserted ${rows.length.toLocaleString()} ${pluralize("quote", rows.length)}`)
+    info(`Inserted ${pluralize("quote", rows.length, true)}`)
   }
 }
 

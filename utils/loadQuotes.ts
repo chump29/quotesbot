@@ -50,7 +50,7 @@ const loadSettings = async (client: Client): Promise<void> => {
   TIMEOUT = ms((Bun.env.TIMEOUT || "12h") as StringValue)
 
   if (Bun.env.DEBUG) {
-    info(`Loaded ${COUNT.toLocaleString()} ${pluralize("quote", COUNT)}`)
+    info(`Loaded ${pluralize("quote", COUNT, true)}`)
   }
 }
 

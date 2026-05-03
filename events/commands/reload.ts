@@ -28,7 +28,7 @@ const invoke = async (interaction: ChatInputCommandInteraction): Promise<void> =
     .then(
       async (): Promise<InteractionResponse> =>
         await interaction.reply({
-          content: `-# > 🔄 Loaded ${COUNT.toLocaleString()} ${pluralize("quote", COUNT)}`,
+          content: `-# > 🔄 Loaded ${pluralize("quote", COUNT, true)}`,
           flags: MessageFlags.Ephemeral
         })
     )
