@@ -25,5 +25,5 @@ await openDatabase()
   })
   .catch(async (e: unknown): Promise<void> => {
     error(e)
-    await shutdown()
+    await shutdown("ERROR")
   })
