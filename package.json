@@ -39,6 +39,10 @@
     "*.{json,ts}": "biome ci --no-errors-on-unmatched",
     ".env*": "dotenv-linter check"
   },
+  "overrides": {
+    "drizzle-orm": "1.0.0-rc.2",
+    "typescript": "^6.0.3"
+  },
   "dependencies": {
     "@postfmly/checkrate": "^1.0.1",
     "@postfmly/logger": "^1.0.1",
@@ -52,7 +56,7 @@
   "devDependencies": {
     "@nano-faker/patterns": "^1.0.1",
     "@nano-faker/person": "^1.0.1",
-    "@postfmly/config": "^1.2.15",
+    "@postfmly/config": "^1.2.16",
     "@types/ms": "^2.1.0",
     "@types/pluralize": "^0.0.33",
     "drizzle-query-logger": "^1.1.2",

@@ -48,7 +48,7 @@ describe("loadQuotes", (): void => {
 
   test("loadSettings - no client", async (): Promise<void> => {
     // biome-ignore lint/suspicious/noExplicitAny: for testing
-    expect(async (): Promise<void> => await loadSettings(null as any)).toThrowError("Invalid client")
+    expect(loadSettings(null as any)).rejects.toThrowError("Invalid client")
   })
 
   test("newQuote", async (): Promise<void> => {
