@@ -41,6 +41,7 @@
 | Generate Quote |  `/quote`  | Administrator |
 | Reload Quotes  | `/reload`  | Administrator |
 |  Start Quotes  |  `/start`  | Administrator |
+|     Status     | `/status`  | Administrator |
 |  Stop Quotes   |  `/stop`   | Administrator |
 
 ---
