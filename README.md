@@ -4,13 +4,15 @@
 
 ---
 
-![Biome](https://img.shields.io/badge/Biome-^2.4.13-informational?style=plastic&logo=biome) &nbsp;
+![Biome](https://img.shields.io/badge/Biome-ul-informational?style=plastic&logo=biome) &nbsp;
 ![Bun](https://img.shields.io/badge/Bun-~1.3.13-informational?style=plastic&logo=bun) &nbsp;
 ![discord.js](https://img.shields.io/badge/discord.js-^14.26.4-informational?style=plastic&logo=discord.js) &nbsp;
-![Drizzle](https://img.shields.io/badge/Drizzle-1.0.0--rc.1-informational?style=plastic&logo=drizzle)
+![Drizzle](https://img.shields.io/badge/Drizzle-1.0.0--rc.2-informational?style=plastic&logo=drizzle)
 ![SQLite](https://img.shields.io/badge/SQLite-3.49.2-informational?style=plastic&logo=sqlite)
 
 ![CodeQL](https://github.com/chump29/quotesbot/workflows/CodeQL/badge.svg) &nbsp;
+![Coverage](https://img.shields.io/badge/Coverage-96.55%25-success?style=plastic&logo=jest)
+
 ![License](https://img.shields.io/github/license/chump29/quotesbot?style=plastic&color=blueviolet&label=License&logo=gplv3)
 
 ---
@@ -94,8 +96,9 @@
 | Lint All (CI)  |  `bun run lint:ci`   |   `bun lint:ci`    |
 |   Lint Biome   | `bun run lint:biome` |  `bun lint:biome`  |
 |    Lint ENV    |  `bun run lint:env`  |   `bun lint:env`   |
-|   Build DEV    |    `bun run dev`     |     `bun dev`      |
-|   Build PROD   |    `bun run prod`    |     `bun prod`     |
+|    Run DEV     |    `bun run dev`     |     `bun dev`      |
+|    Run PROD    |    `bun run prod`    |     `bun prod`     |
+|      Test      |    `bun run test`    |       &mdash       |
 
 ---
 
@@ -110,13 +113,25 @@
 |      DB Name       |   DB_NAME   |  quotesbot.db  |
 |      DB Path       |   DB_PATH   |     ./db/      |
 |       Debug        |  IS_DEBUG   | true/**false** |
-|  Logo Server Port  |  LOGO_PORT  |      8005      |
-|  Run Logo Server   | LOGO_SERVER | **true**/false |
-|      Logo URL      |  LOGO_URL   |   [logo url]   |
+|      Logo URL      |  LOGO_URL   |     [url]      |
 |      Bot Name      |    NAME     |   QuotesBot    |
-| Message Rate Limit |    RATE     |       1s       |
-|   Quote Timeout    |   TIMEOUT   |      12h       |
+|   Quote Timeout    |   TIMEOUT   |       6h       |
 |     Bot Token      |    TOKEN    |    [token]     |
+
+##### From `@postfmly/logoserver`:
+
+| 📝 Description | 📌 Variable |    {...} Value    |
+|:--------------:|:-----------:|:-----------------:|
+|   IPv4/IPv6    |  LOGO_IPv6  |  true/**false**   |
+|   Logo Name    |  LOGO_NAME  |    [filename]     |
+|   Local Path   |  LOGO_PATH  |      [path]       |
+|      Port      |  LOGO_PORT  | **Random**/[port] |
+
+##### From `@postfmly/checkrate`:
+
+| 📝 Description | 📌 Variable | {...} Value |
+|:--------------:|:-----------:|:-----------:|
+|   Rate Limit   |    RATE     |     1s      |
 
 #### Deployment:
 

@@ -7,6 +7,6 @@ const quotes = sqliteTable("quotes", {
   quote: text().notNull().unique()
 })
 
-type IQuotes = InferSelectModel<typeof quotes>
+type IQuote = InferSelectModel<typeof quotes>
 
-export { type IQuotes, quotes }
+export { type IQuote, quotes }

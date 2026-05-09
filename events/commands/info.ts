@@ -11,7 +11,8 @@ import {
   SlashCommandBuilder
 } from "discord.js"
 
-import { checkRate } from "../../utils/checkRate.ts"
+import { checkRate } from "@postfmly/checkrate"
+
 import { COUNT } from "../../utils/loadQuotes.ts"
 
 const create = (): RESTPostAPIChatInputApplicationCommandsJSONBody => {
@@ -26,6 +27,10 @@ const create = (): RESTPostAPIChatInputApplicationCommandsJSONBody => {
 const invoke = async (interaction: ChatInputCommandInteraction): Promise<void> => {
   if (await checkRate(interaction)) {
     return
+  }
+
+  if (!Bun.env.LOGO_URL) {
+    throw new Error("Invalid LOGO_URL")
   }
 
   await interaction.reply({

@@ -1,16 +1,30 @@
 import { ActivityType, Client, GatewayIntentBits } from "discord.js"
 
 import { info } from "@postfmly/logger"
+import { stopLogoServer } from "@postfmly/logoserver"
 
 import { closeDatabase } from "./db.ts"
 import { RUNNING, stopQuotes } from "./loadQuotes.ts"
-import { SERVER } from "./logo.ts"
 
 let CLIENT: Client | null = null
+const TEST_CLIENT: Client | null = null
 
 let isShutdown: boolean = false
 
-const shutdown = async (): Promise<void> => {
+const EVENTS: string[] = [
+  "SIGINT",
+  "SIGTERM"
+]
+
+const shutdown = async (event: string): Promise<void> => {
+  if (isShutdown) {
+    return
+  }
+
+  if (Bun.env.DEBUG) {
+    info(`${event} detected`)
+  }
+
   info("Shutting down...")
 
   isShutdown = true
@@ -21,9 +35,9 @@ const shutdown = async (): Promise<void> => {
         await stopQuotes()
       }
     })
-    .then(async (): Promise<void> => CLIENT?.destroy())
-    .then(async (): Promise<void> => await SERVER?.stop(true))
-    .then((): void => process.exit())
+    .then(async (): Promise<void> => await CLIENT?.destroy())
+    .then(async (): Promise<void> => await stopLogoServer())
+    .then((): void => process.exit(0))
 }
 
 const client = async (): Promise<Client> => {
@@ -41,36 +55,24 @@ const client = async (): Promise<Client> => {
     }
   })
 
-  process.on("SIGINT", async (): Promise<void> => {
-    if (isShutdown) {
-      return
-    }
-
-    if (Bun.env.DEBUG) {
-      info("SIGINT detected")
-    }
-
-    await shutdown()
-  })
-
-  process.on("SIGTERM", async (): Promise<void> => {
-    if (isShutdown) {
-      return
-    }
-
-    if (Bun.env.DEBUG) {
-      info("SIGTERM detected")
-    }
-
-    await shutdown()
+  EVENTS.forEach((event: string): void => {
+    process.on(event, async (event: string): Promise<void> => {
+      await shutdown(event)
+    })
   })
 
   return CLIENT
 }
 
 const login = async (): Promise<Client> => {
+  CLIENT = TEST_CLIENT ?? CLIENT
+
   if (!CLIENT) {
-    throw new Error("Invalid client")
+    throw new Error("Invalid CLIENT")
+  }
+
+  if (!Bun.env.TOKEN) {
+    throw new Error("Invalid TOKEN")
   }
 
   await CLIENT.login(Bun.env.TOKEN)
@@ -82,4 +84,4 @@ const login = async (): Promise<Client> => {
   return CLIENT
 }
 
-export { client, login, shutdown }
+export { client, login, shutdown, TEST_CLIENT }

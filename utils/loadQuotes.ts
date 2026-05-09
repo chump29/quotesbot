@@ -1,16 +1,17 @@
 import { type Channel, type Client, MessageFlags, type TextChannel } from "discord.js"
 
 import { info } from "@postfmly/logger"
+
 import ms, { type StringValue } from "ms"
 import pluralize from "pluralize"
 
-import { type IQuotes } from "../db/schema.ts"
+import { type IQuote } from "../db/schema.ts"
 import { getQuotes } from "./db.ts"
 
 let CLIENT: Client | null = null
 let CHANNEL: TextChannel | null = null
 
-let QUOTES: IQuotes[] = []
+let QUOTES: IQuote[] = []
 let COUNT: number = 0
 
 let RUNNING: boolean = false
@@ -18,14 +19,22 @@ let RUNNING: boolean = false
 let TIMEOUT: number = 0
 let ID: NodeJS.Timeout | null = null
 
-const getChannel = async (): Promise<TextChannel> => {
-  if (!CLIENT) {
-    throw new Error("Invalid client")
-  }
+interface ITesting {
+  CHANNEL: Channel
+}
 
-  return await CLIENT.channels.fetch(Bun.env.CHANNEL_ID).then((channel: Channel | null) => {
+let forTesting: ITesting | null = null
+
+const getChannel = async (): Promise<TextChannel> => {
+  return await CLIENT!.channels.fetch(Bun.env.CHANNEL_ID).then((channel: Channel | null) => {
     if (!channel) {
       throw new Error("Invalid channel")
+    }
+
+    if (Bun.env.NODE_ENV === "test") {
+      forTesting = {
+        CHANNEL: CHANNEL
+      } as ITesting
     }
 
     return channel as TextChannel
@@ -47,7 +56,7 @@ const loadSettings = async (client: Client): Promise<void> => {
 
   await refreshQuotes()
 
-  TIMEOUT = ms((Bun.env.TIMEOUT || "12h") as StringValue)
+  TIMEOUT = ms((Bun.env.TIMEOUT || "6h") as StringValue)
 
   if (Bun.env.DEBUG) {
     info(`Loaded ${pluralize("quote", COUNT, true)}`)
@@ -59,7 +68,7 @@ const newQuote = async (): Promise<void> => {
     clearTimeout(ID)
   }
 
-  const quote: IQuotes | undefined = QUOTES[Math.floor(Math.random() * QUOTES.length)]
+  const quote: IQuote | undefined = QUOTES[Math.floor(Math.random() * QUOTES.length)]
   if (!quote) {
     throw new Error("Invalid quote")
   }
@@ -100,4 +109,4 @@ const stopQuotes = async (): Promise<void> => {
   }
 }
 
-export { COUNT, loadSettings, newQuote, RUNNING, refreshQuotes, startQuotes, stopQuotes }
+export { COUNT, forTesting, loadSettings, newQuote, RUNNING, refreshQuotes, startQuotes, stopQuotes }

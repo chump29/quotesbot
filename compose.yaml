@@ -8,6 +8,10 @@ services:
     volumes:
       - db:/app/db
     environment:
+      - LOGO_NAME=quotesbot.webp
+      - LOGO_PATH=./utils/images
+      - LOGO_PORT=8005
+      - LOGO_URL=https://quotesbot.postfmly.us/quotesbot.webp
       - TZ=America/Chicago
     env_file: .env
     labels:
