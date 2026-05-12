@@ -13,10 +13,6 @@ import { fake } from "@nano-faker/patterns"
 
 import { client, login, shutdown } from "./client.ts"
 
-const ID_LEN: number = 26
-const TS_LEN: number = 6
-const HMAC_LEN: number = 38
-
 describe("client", (): void => {
   spyOn(process, "exit").mockImplementation((code: number): never => {
     throw new Error(code.toString())
@@ -52,7 +48,16 @@ describe("client", (): void => {
     expect(activities!.name === "Quoting...").toBeTrue()
     expect(activities!.type === ActivityType.Custom).toBeTrue()
 
+    mock.module("./client.ts", (): unknown => {
+      return {
+        shutdown: jest.fn()
+      }
+    })
+
+    process.emit("SIGINT")
     expect(onSpy).toHaveBeenNthCalledWith(1, "SIGINT", expect.any(Function))
+
+    process.emit("SIGTERM")
     expect(onSpy).toHaveBeenNthCalledWith(2, "SIGTERM", expect.any(Function))
   })
 
@@ -72,6 +77,10 @@ describe("client", (): void => {
         } as unknown as Client
       }
     })
+
+    const ID_LEN: number = 26
+    const TS_LEN: number = 6
+    const HMAC_LEN: number = 38
 
     Bun.env.TOKEN = fake(`${"*".repeat(ID_LEN)}.${"*".repeat(TS_LEN)}.${"*".repeat(HMAC_LEN)}`)
 
