@@ -11,7 +11,7 @@
 ![SQLite](https://img.shields.io/badge/SQLite-$_sqlite-informational?style=plastic&logo=sqlite)
 
 ![CodeQL](https://github.com/chump29/quotesbot/workflows/CodeQL/badge.svg) &nbsp;
-![Coverage](https://img.shields.io/badge/Coverage-96.97%25-success?style=plastic&logo=jest)
+![Coverage](https://img.shields.io/badge/Coverage-$_coverage%25-success?style=plastic&logo=jest)
 
 ![License](https://img.shields.io/github/license/chump29/quotesbot?style=plastic&color=blueviolet&label=License&logo=gplv3)
 
@@ -142,6 +142,19 @@
 | Docker Only | `./docker.sh` |
 
 ---
+
+### 📃 CSV
+
+```csv
+quote,author
+"Some quote",Unknown
+```
+
+- *NOTES:*
+
+  - `quote` must be start and end with quotation marks
+
+  - `quote` and `author` minimum length must be >= 3
 
 ### 📄 Documentation
 

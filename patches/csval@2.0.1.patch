@@ -1,0 +1,17 @@
+diff --git a/src/parseCsv.js b/src/parseCsv.js
+index 29e40de8b83d55ff6cbab959cb50aca890396415..322b4beecf2ac6985aebf368593ff1cf5936014a 100644
+--- a/src/parseCsv.js
++++ b/src/parseCsv.js
+@@ -6,6 +6,12 @@ const parseCsv = async (data) => {
+   const parsed = parse(data, {
+     header: true,
+     skipEmptyLines: true,
++    transform: (quote, field) => {
++      if (field === "quote") {
++        return `"${quote}"`
++      }
++      return quote
++    }
+   });
+ 
+   if (parsed.errors.length > 0) {

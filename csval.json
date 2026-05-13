@@ -1,0 +1,18 @@
+{
+  "$comment": "https://ajv.js.org/",
+  "properties": {
+    "author": {
+      "minLength": 3,
+      "type": "string"
+    },
+    "quote": {
+      "minLength": 5,
+      "pattern": "^\".*\"$",
+      "type": "string"
+    }
+  },
+  "required": [
+    "author",
+    "quote"
+  ]
+}
