@@ -29,7 +29,7 @@
     "postinstall": "config-init",
     "lint": "bun run lint:biome && bun run lint:env && bun run lint:csv",
     "lint:biome": "biome check --write --verbose",
-    "lint:ci": "biome ci --verbose --reporter=default --reporter=github",
+    "lint:ci": "biome ci --verbose --reporter=default --reporter=github && bun run lint:env && bun run lint:csv",
     "lint:csv": "csval utils/quotes.csv csval.json",
     "lint:env": "dotenv-linter check .",
     "prepare": "husky",
