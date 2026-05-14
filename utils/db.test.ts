@@ -60,7 +60,7 @@ describe("db", (): void => {
   test("getQuotes", async (): Promise<void> => {
     const quotes: IQuote[] = await getQuotes()
     expect(quotes).not.toBeEmpty()
-    expect(quotes.at(0)?.author).toBe(author)
-    expect(quotes.at(0)?.quote).toBe(quote)
+    expect(quotes[0]!.author).toBe(author)
+    expect(quotes[0]!.quote).toBe(quote)
   })
 })
