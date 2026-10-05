@@ -4,12 +4,12 @@ import { join } from "node:path"
 
 import { afterAll, beforeAll, describe, expect, jest, spyOn, test } from "bun:test"
 
-import { fakerEN_US as fake } from "@faker-js/faker"
+import { default as csvToJson } from "convert-csv-to-json"
 import { type Channel, type ChannelManager, type Client } from "discord.js"
 import { SCHEDULES } from "natural-cron"
 import { match } from "ts-pattern"
 
-import { type IQuote, quotes } from "../../db/schema.ts"
+import { type IQuote } from "../../db/schema.ts"
 import { DB } from "../../utils/db.ts"
 import { env } from "../../utils/env.ts"
 
@@ -21,9 +21,6 @@ const deleteFiles = async (): Promise<void> => {
   }
 }
 
-const quote: string = fake.lorem.sentence()
-const author: string = fake.person.fullName()
-
 beforeAll(async (): Promise<void> => {
   infoSpy.mockReset()
 
@@ -32,8 +29,6 @@ beforeAll(async (): Promise<void> => {
   DB.open()
 
   assert(DB._db)
-
-  await DB._db.insert(quotes).values({ quote, author })
 
   await DB.init({
     channels: {
@@ -51,8 +46,12 @@ afterAll(async (): Promise<void> => {
 })
 
 describe("db", (): void => {
-  test("COUNT", (): void => {
-    expect(DB.COUNT).toBe(1)
+  test("COUNT", async (): Promise<void> => {
+    const allQuotes: IQuote[] = (await csvToJson
+      .supportQuotedField(true)
+      .getJsonFromCsvAsync(join(env.DB_PATH, "quotes.csv"))) as IQuote[]
+
+    expect(DB.COUNT).toBe(allQuotes.length)
   })
 
   test("Cron", (): void => {
@@ -67,7 +66,7 @@ describe("db", (): void => {
   test("getQuote", async (): Promise<void> => {
     const q: IQuote = await DB.getQuote()
 
-    expect(q.quote).toBe(quote)
-    expect(q.author).toBe(author)
+    expect(q.quote.length).toBeGreaterThan(0)
+    expect(q.author.length).toBeGreaterThan(0)
   })
 })

@@ -6,6 +6,7 @@ import { info } from "@postfmly/logger"
 import { type Nullable } from "@postfmly/types"
 
 import { default as pluralize } from "@jarrodek/pluralize"
+import { default as csvToJson } from "convert-csv-to-json"
 import { type Channel, type Client } from "discord.js"
 import { sql } from "drizzle-orm"
 import { drizzle } from "drizzle-orm/bun-sqlite"
@@ -99,7 +100,29 @@ class QuotesBotDatabase implements IQuotesBotDatabase {
     return this._db
   }
 
+  private async load(): Promise<void> {
+    const allQuotes: IQuote[] = (await csvToJson
+      .supportQuotedField(true)
+      .getJsonFromCsvAsync(join(env.DB_PATH, "quotes.csv"))) as IQuote[]
+
+    if (allQuotes.length === 0) {
+      throw new Error("No quotes found")
+    }
+
+    if ((await this.dbCheck().$count(quotes)) !== allQuotes.length) {
+      await this.dbCheck().delete(quotes)
+
+      await this.dbCheck().insert(quotes).values(allQuotes).returning()
+
+      if (env.DEBUG) {
+        info(`✅ Inserted ${pluralize("quote", allQuotes.length, true)}`)
+      }
+    }
+  }
+
   async init(client: Client): Promise<void> {
+    await this.load()
+
     this.COUNT = await this.dbCheck().$count(quotes)
 
     if (env.DEBUG) {
@@ -121,7 +144,7 @@ class QuotesBotDatabase implements IQuotesBotDatabase {
     })
 
     if (env.DEBUG) {
-      info(`🕒 Running: ${CronExpressionDescriber.describe(time)}`)
+      info(`🕒 Runs: ${CronExpressionDescriber.describe(time)}`)
     }
   }
 

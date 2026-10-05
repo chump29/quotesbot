@@ -11,4 +11,5 @@
 !tsconfig.json
 !utils/
 
+db/quotes.csv
 db/quotesbot*

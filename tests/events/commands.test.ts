@@ -54,13 +54,13 @@ beforeAll(async (): Promise<void> => {
 
   await DB._db.delete(quotes)
 
-  await DB._db.insert(quotes).values({ author: fake.person.fullName(), quote: fake.lorem.sentence() })
-
   await DB.init({
     channels: {
       fetch: jest.fn().mockResolvedValue({} as Channel)
     } as unknown as ChannelManager
   } as Client)
+
+  assert(DB.COUNT > 0)
 })
 
 afterAll((): void => {

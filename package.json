@@ -36,7 +36,6 @@
     "scan": "bun audit && bunx --bun cve-lite-cli --check-overrides",
     "scan:e18e": "bunx --bun @e18e/cli analyze",
     "sql": "drizzle-kit generate",
-    "sql:load": "bun run --bun db/quotes.ts",
     "test": "bun test --isolate --dots --bail",
     "test:coverage": "bun test --isolate --dots --coverage --coverage-dir ./tests/coverage --coverage-reporter=text --coverage-reporter=lcov --bail",
     "test:coverage:full": "bun test --isolate --coverage --coverage-dir ./tests/coverage --coverage-reporter=text --coverage-reporter=lcov --bail",
