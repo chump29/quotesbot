@@ -4,54 +4,47 @@ import {
   type APIEmbedField,
   type ChatInputCommandInteraction,
   EmbedBuilder,
+  type HexColorString,
   InteractionContextType,
   MessageFlags,
-  PermissionFlagsBits,
   type RESTPostAPIChatInputApplicationCommandsJSONBody,
   SlashCommandBuilder
 } from "discord.js"
 
-import { checkRate } from "@postfmly/checkrate"
+import { author, version } from "../../package.json" with { type: "json" }
+import { bucket } from "../../utils/bucket.ts"
+import { DB } from "../../utils/db.ts"
+import { env } from "../../utils/env.ts"
 
-import { COUNT } from "../../utils/loadQuotes.ts"
-
-const create = (): RESTPostAPIChatInputApplicationCommandsJSONBody => {
-  return new SlashCommandBuilder()
+const create = (): RESTPostAPIChatInputApplicationCommandsJSONBody =>
+  new SlashCommandBuilder()
     .setName(parse(import.meta.file).name)
-    .setDescription(`Information about ${Bun.env.NAME}`)
-    .setDefaultMemberPermissions(PermissionFlagsBits.SendMessages)
+    .setDescription(`Information about ${env.NAME}`)
     .setContexts(InteractionContextType.Guild)
     .toJSON()
-}
 
 const invoke = async (interaction: ChatInputCommandInteraction): Promise<void> => {
-  if (await checkRate(interaction)) {
+  await interaction.deferReply({ flags: MessageFlags.Ephemeral })
+
+  if (!bucket.allow(interaction.user.username)) {
+    await interaction.editReply({ content: "-# > ❌ Rate limit exceeded" })
+
     return
   }
 
-  if (!Bun.env.LOGO_URL) {
-    throw new Error("Invalid LOGO_URL")
-  }
-
-  await interaction.reply({
-    flags: MessageFlags.Ephemeral,
+  await interaction.editReply({
     embeds: [
       new EmbedBuilder()
-        .setColor("#78866b")
-        .setAuthor({
-          iconURL: Bun.env.LOGO_URL,
-          name: `${Bun.env.NAME} v${Bun.env.npm_package_version}`
-        })
-        .setThumbnail(Bun.env.LOGO_URL)
+        .setColor(env.COLOR as HexColorString)
+        .setAuthor({ iconURL: env.LOGO_URL, name: `${env.NAME} v${version}` })
+        .setThumbnail(env.LOGO_URL)
         .setDescription("- Show quotes")
         .setFields({
           inline: true,
           name: "Total Quotes",
-          value: COUNT.toLocaleString()
+          value: DB.COUNT.toLocaleString()
         } as APIEmbedField)
-        .setFooter({
-          text: "By Chris Post"
-        })
+        .setFooter({ text: `By ${author.name}` })
     ]
   })
 }

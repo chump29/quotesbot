@@ -1,90 +1,95 @@
+import { default as process } from "node:process"
+
+import { error, info } from "@postfmly/logger"
+import { type ILogoServerConfig, LogoServer } from "@postfmly/logoserver"
+import { type Nullable } from "@postfmly/types"
+
 import { ActivityType, Client, GatewayIntentBits } from "discord.js"
 
-import { info } from "@postfmly/logger"
-import { stopLogoServer } from "@postfmly/logoserver"
+import { loadCommands } from "../events/loadCommands.ts"
+import { DB } from "./db.ts"
+import { env } from "./env.ts"
 
-import { closeDatabase } from "./db.ts"
-import { RUNNING, stopQuotes } from "./loadQuotes.ts"
+let SERVER: Nullable<LogoServer> = null
 
-let CLIENT: Client | null = null
-const TEST_CLIENT: Client | null = null
+let CLIENT: Nullable<Client> = null
+const TEST_CLIENT: Nullable<Client> = null
 
 let isShutdown: boolean = false
 
-const EVENTS: string[] = [
-  "SIGINT",
-  "SIGTERM"
-]
-
-const shutdown = async (event: string): Promise<void> => {
+const shutdown = async (event: string = "ERROR"): Promise<void> => {
   if (isShutdown) {
-    if (Bun.env.DEBUG) {
-      info("Already shut down")
-    }
     return
   }
 
-  if (Bun.env.DEBUG) {
-    info(`${event} detected`)
+  if (env.DEBUG) {
+    info(`❌ ${event} detected`)
   }
 
-  info("Shutting down...")
+  info("🔴 Shutting down...")
 
   isShutdown = true
 
-  await closeDatabase()
-    .then(async (): Promise<void> => {
-      if (RUNNING) {
-        await stopQuotes()
-      }
-    })
-    .then(async (): Promise<void> => await Promise.resolve(CLIENT?.destroy()))
-    .then(async (): Promise<void> => await stopLogoServer())
-    .then((): void => process.exit(0))
+  await CLIENT?.destroy()
+
+  await SERVER?.stop()
+
+  DB.close()
+
+  process.exit(0)
 }
 
-const client = async (): Promise<Client> => {
+const login = async (): Promise<void> => {
+  if (!CLIENT) {
+    throw new Error("Invalid CLIENT")
+  }
+
+  CLIENT = TEST_CLIENT ?? CLIENT
+
+  await CLIENT.login(env.TOKEN)
+
+  if (CLIENT.user && env.DEBUG) {
+    info(`⚡ Connected as ${CLIENT.user.displayName} (${CLIENT.user.tag})`)
+  }
+}
+
+const init = async (): Promise<Client> => {
+  SERVER = new LogoServer({
+    DEBUG: env.DEBUG,
+    LOGO_NAME: env.LOGO_NAME,
+    LOGO_PATH: env.LOGO_PATH,
+    LOGO_PORT: env.LOGO_PORT
+  } as ILogoServerConfig)
+
+  await SERVER.start()
+
   CLIENT = new Client({
-    intents: [
-      GatewayIntentBits.Guilds
-    ],
+    intents: [GatewayIntentBits.Guilds],
     presence: {
       activities: [
         {
-          name: "Quoting...",
+          name: `${env.ACTIVITY}...`,
           type: ActivityType.Custom
         }
       ]
     }
   })
 
-  EVENTS.forEach((event: string): void => {
-    process.on(event, async (event: string): Promise<void> => {
-      await shutdown(event)
+  for (const event of ["SIGINT", "SIGTERM"]) {
+    process.on(event, (e: string): void => {
+      shutdown(e).catch((err: unknown) => {
+        error("❌ Error during shutdown", err)
+
+        process.exit(1)
+      })
     })
-  })
+  }
+
+  await loadCommands(CLIENT)
+
+  await login()
 
   return CLIENT
 }
 
-const login = async (): Promise<Client> => {
-  CLIENT = TEST_CLIENT ?? CLIENT
-
-  if (!CLIENT) {
-    throw new Error("Invalid CLIENT")
-  }
-
-  if (!Bun.env.TOKEN) {
-    throw new Error("Invalid TOKEN")
-  }
-
-  await CLIENT.login(Bun.env.TOKEN)
-
-  if (CLIENT.user && Bun.env.DEBUG) {
-    info(`Connected as ${CLIENT.user.displayName} (${CLIENT.user.tag})`)
-  }
-
-  return CLIENT
-}
-
-export { client, login, shutdown, TEST_CLIENT }
+export { init, shutdown, TEST_CLIENT }

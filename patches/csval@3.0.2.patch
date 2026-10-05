@@ -1,0 +1,17 @@
+diff --git a/src/parseCsv.js b/src/parseCsv.js
+index c4d1bcbb14f3f058db561fe9cb0124b69c82a9d4..f9a1766f94e1cbb9cd90997b29a8516a15a0a629 100644
+--- a/src/parseCsv.js
++++ b/src/parseCsv.js
+@@ -5,6 +5,12 @@ const { parse } = papaparse;
+ const DEFAULT_CONFIG = {
+   header: true,
+   skipEmptyLines: true,
++  transform: (q, f) => {
++    if (f === "quote") {
++      return `"${q}"`
++    }
++    return q
++  }
+ };
+ 
+ /**

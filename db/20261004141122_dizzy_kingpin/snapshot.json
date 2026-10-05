@@ -1,0 +1,63 @@
+{
+  "version": "7",
+  "dialect": "sqlite",
+  "id": "4061a0ad-430b-4b90-8f7a-57f9306447a3",
+  "prevIds": [
+    "00000000-0000-0000-0000-000000000000"
+  ],
+  "ddl": [
+    {
+      "name": "quotes",
+      "entityType": "tables"
+    },
+    {
+      "type": "text",
+      "notNull": true,
+      "autoincrement": false,
+      "default": null,
+      "generated": null,
+      "name": "author",
+      "entityType": "columns",
+      "table": "quotes"
+    },
+    {
+      "type": "integer",
+      "notNull": false,
+      "autoincrement": false,
+      "default": null,
+      "generated": null,
+      "name": "id",
+      "entityType": "columns",
+      "table": "quotes"
+    },
+    {
+      "type": "text",
+      "notNull": true,
+      "autoincrement": false,
+      "default": null,
+      "generated": null,
+      "name": "quote",
+      "entityType": "columns",
+      "table": "quotes"
+    },
+    {
+      "columns": [
+        "id"
+      ],
+      "nameExplicit": false,
+      "name": "quotes_pk",
+      "table": "quotes",
+      "entityType": "pks"
+    },
+    {
+      "columns": [
+        "quote"
+      ],
+      "nameExplicit": false,
+      "name": "quotes_quote_unique",
+      "entityType": "uniques",
+      "table": "quotes"
+    }
+  ],
+  "renames": []
+}

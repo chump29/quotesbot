@@ -1,115 +1,146 @@
-import { mkdir } from "node:fs/promises"
+import { join } from "node:path"
 
-import { Database, SQLiteError } from "bun:sqlite"
+import { Database } from "bun:sqlite"
 
 import { info } from "@postfmly/logger"
+import { type Nullable } from "@postfmly/types"
 
-import ConvertCsvToJson from "convert-csv-to-json"
+import { default as pluralize } from "@jarrodek/pluralize"
+import { type Channel, type Client } from "discord.js"
 import { sql } from "drizzle-orm"
-import { drizzle, type SQLiteBunDatabase } from "drizzle-orm/bun-sqlite"
-import pluralize from "pluralize"
+import { drizzle } from "drizzle-orm/bun-sqlite"
+import { migrate } from "drizzle-orm/bun-sqlite/migrator"
+import { CronExpressionBuilder, CronExpressionDescriber, SCHEDULES } from "natural-cron"
+import { match } from "ts-pattern"
 
 import { type IQuote, quotes } from "../db/schema.ts"
+import { env } from "./env.ts"
+import { showQuote } from "./quote.ts"
 
-let SQLITE: Database | null = null
-let TEST_SQLITE: Database | null = null
-let DB: SQLiteBunDatabase | null = null
-const TEST_DB: SQLiteBunDatabase | null = null
+type DBType = ReturnType<typeof drizzle>
 
-Bun.env.DB_NAME = Bun.env.DB_NAME || "quotesbot.db"
-Bun.env.DB_PATH = Bun.env.DB_PATH || "./db/"
-
-const loadQuotes = async (): Promise<void> => {
-  const allQuotes: IQuote[] = await ConvertCsvToJson.supportQuotedField(true).getJsonFromCsvAsync(
-    `${import.meta.dirname}/quotes.csv`
-  )
-
-  if (!allQuotes.length) {
-    throw new Error("No quotes found")
-  }
-
-  if (!DB) {
-    throw new Error("Database not open")
-  }
-
-  await DB.delete(quotes)
-
-  const rows: IQuote[] = await DB.insert(quotes).values(allQuotes).returning()
-
-  if (Bun.env.DEBUG) {
-    info(`Inserted ${pluralize("quote", rows.length, true)}`)
-  }
+interface IQuotesBotDatabase {
+  _db: Nullable<DBType>
+  _job: Nullable<Bun.CronJob>
+  COUNT: number
+  close: () => void
+  getQuote: () => Promise<IQuote>
+  init: (client: Client) => Promise<void>
+  open: () => void
 }
 
-const openDatabase = async (): Promise<void> => {
-  await mkdir(Bun.env.DB_PATH, {
-    recursive: true
-  })
+class QuotesBotDatabase implements IQuotesBotDatabase {
+  private client: Nullable<Database> = null
+  _db: Nullable<DBType> = null
 
-  const DB_STR: string = `${Bun.env.DB_PATH}${Bun.env.DB_NAME}`
+  COUNT: number = 0
 
-  SQLITE = new Database(DB_STR, {
-    create: true,
-    strict: true
-  })
+  _job: Nullable<Bun.CronJob> = null
 
-  if (Bun.env.NODE_ENV === "test") {
-    TEST_SQLITE = SQLITE
-  }
+  open(): void {
+    if (this._db && env.DEBUG) {
+      info("⚠️  Database already open")
 
-  DB =
-    TEST_DB ??
-    drizzle({
-      client: SQLITE,
+      return
+    }
+
+    const dbPathName: string = join(env.DB_PATH, env.DB_NAME)
+
+    this.client = new Database(dbPathName, {
+      create: true,
+      strict: true
+    })
+
+    this.client.run(`
+      PRAGMA busy_timeout = 3000;
+      PRAGMA foreign_keys = 0;
+      PRAGMA journal_mode = WAL;
+      PRAGMA synchronous = NORMAL;
+      PRAGMA wal_checkpoint(TRUNCATE);
+    `)
+
+    this._db = drizzle({
+      client: this.client,
       jit: true
     })
-  DB.run(
-    sql.raw(`
-      PRAGMA journal_mode = WAL;
-      PRAGMA wal_checkpoint(TRUNCATE);`)
-  )
 
-  try {
-    await DB.select().from(quotes)
-  } catch (e: unknown) {
-    if (e instanceof SQLiteError && e.message.includes("no such table")) {
-      if (Bun.env.DEBUG) {
-        info("Creating tables")
-      }
+    migrate(this._db, {
+      migrationsFolder: env.DB_PATH
+    })
 
-      DB.run(
-        sql.raw(`
-          CREATE TABLE quotes(
-            id INTEGER PRIMARY KEY,
-            quote TEXT NOT NULL UNIQUE,
-            author TEXT NOT NULL);`)
-      )
-
-      await loadQuotes()
-    } else {
-      throw e
+    if (env.DEBUG) {
+      info(`▶️  Using database: ${dbPathName}`)
     }
   }
 
-  if (Bun.env.DEBUG) {
-    info(`Using database: ${DB_STR}`)
+  close(): void {
+    if (!this._db && env.DEBUG) {
+      info("⚠️  Database already closed")
+    }
+
+    this.client?.close()
+    this.client = null
+
+    this._job?.stop()
+    this._job = null
+
+    this._db = null
+
+    if (env.DEBUG) {
+      info("⏹️  Database closed")
+    }
+  }
+
+  private dbCheck(): DBType {
+    if (!this._db) {
+      throw new Error("Database not open")
+    }
+
+    return this._db
+  }
+
+  async init(client: Client): Promise<void> {
+    this.COUNT = await this.dbCheck().$count(quotes)
+
+    if (env.DEBUG) {
+      info(`ℹ️  Found ${pluralize("quote", this.COUNT, true)}`)
+    }
+
+    const channel: Nullable<Channel> = await client.channels.fetch(env.CHANNEL_ID)
+    if (!channel) {
+      throw new Error("Could not get channel")
+    }
+
+    const time: string = match<string, string>(env.TIMEOUT)
+      .with("@hourly", (): string => SCHEDULES.EVERY_HOUR)
+      .with("@daily", (): string => SCHEDULES.EVERY_DAY_AT_MIDNIGHT)
+      .otherwise((s: string): string => new CronExpressionBuilder().everyX(Number(s), "hour").compile())
+
+    this._job = Bun.cron(time, async (): Promise<void> => {
+      await showQuote(channel, await DB.getQuote())
+    })
+
+    if (env.DEBUG) {
+      info(`🕒 Running: ${CronExpressionDescriber.describe(time)}`)
+    }
+  }
+
+  // * /quote
+  async getQuote(): Promise<IQuote> {
+    const [quote]: IQuote[] = await this.dbCheck()
+      .select({ author: quotes.author, quote: quotes.quote })
+      .from(quotes)
+      .orderBy(sql`RANDOM()`)
+      .limit(1)
+
+    if (!quote) {
+      throw new Error("Could not get quote")
+    }
+
+    return quote
   }
 }
 
-const getQuotes = async (): Promise<IQuote[]> => {
-  if (!DB) {
-    throw new Error("Database not open")
-  }
+const DB: IQuotesBotDatabase = new QuotesBotDatabase()
 
-  return await DB.select().from(quotes)
-}
-
-const closeDatabase = async (): Promise<void> => {
-  SQLITE?.close()
-
-  if (Bun.env.DEBUG) {
-    info("Database closed")
-  }
-}
-
-export { closeDatabase, getQuotes, loadQuotes, openDatabase, TEST_DB, TEST_SQLITE }
+export { DB }
