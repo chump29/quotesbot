@@ -1,5 +1,5 @@
 #!/usr/bin/env -S bash -e
 
-bunx lint-staged
+bun run --bun lint-staged
 
 #exit 1
