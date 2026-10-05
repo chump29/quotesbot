@@ -5,7 +5,7 @@
     "": {
       "name": "quotesbot",
       "dependencies": {
-        "@lukeed/ms": "^2.0.2",
+        "@jarrodek/pluralize": "^1.0.2",
         "@postfmly/checkrate": "^2.0.1",
         "@postfmly/logger": "^1.0.34",
         "@postfmly/logoserver": "^1.3.10",
@@ -16,15 +16,12 @@
         "envalid": "^8.2.0",
         "magic-regexp": "^0.11.2",
         "natural-cron": "^1.1.0",
-        "pluralize": "^8.0.0",
         "ts-pattern": "^5.9.0",
         "valibot": "^1.5.0",
       },
       "devDependencies": {
         "@faker-js/faker": "^10.6.0",
-        "@jarrodek/pluralize": "^1.0.2",
         "@postfmly/config": "^1.6.1",
-        "@types/ms": "^2.1.0",
         "csval": "^3.0.2",
         "drizzle-kit": "1.0.0-rc.4",
         "expect-type": "^1.4.0",
@@ -316,8 +313,6 @@
 
     "@types/bun": ["@types/bun@1.4.2", "https://npm.postfmly.com/@types/bun/-/bun-1.4.2.tgz", { "dependencies": { "bun-types": "1.4.2" } }, "sha512-GimotNn7+ZV0uVArItBbriZsR1oNf0+WTzPkdcFrzShI7k2norL0uzEaJT8T33dWr7O/c9ZDuAFQrctKCi72oQ=="],
 
-    "@types/ms": ["@types/ms@2.1.0", "https://npm.postfmly.com/@types/ms/-/ms-2.1.0.tgz", {}, "sha512-GsCCIZDE/p3i96vtEqx+7dBUGXrc7zeSK3wwPHIaRThS+9OhWIXRqzs4d6k1SVU8g91DrNRWxWUGhp5KXQb2VA=="],
-
     "@types/node": ["@types/node@26.6.4", "https://npm.postfmly.com/@types/node/-/node-26.6.4.tgz", { "dependencies": { "undici-types": "~8.9.0" } }, "sha512-ldVPDCzj7fsaGZrLB0NuHuTvJcsNasysBAqMolr/cgxrLd1xbqxIr3XJiPnHHJUCxj5sNF1vnRj9aWnrVh5Jcg=="],
 
     "@types/ws": ["@types/ws@8.18.2", "https://npm.postfmly.com/@types/ws/-/ws-8.18.2.tgz", { "dependencies": { "@types/node": "*" } }, "sha512-67MQl+fpWKVTT1NYdnmo3U4sc/xPo/zQBncVnI74qmQa0z/b+1g6iYqNmGCPbxO+zz2aklb08a0oHfegiVd0/w=="],
@@ -483,8 +478,6 @@
     "picocolors": ["picocolors@1.1.1", "https://npm.postfmly.com/picocolors/-/picocolors-1.1.1.tgz", {}, "sha512-xceH2snhtb5M9liqDsmEw56le376mTZkEX/jEb/RxNFyegNul7eNslCXP9FDj/Lcu0X8KEyMceP2ntpaHrDEVA=="],
 
     "picomatch": ["picomatch@4.0.7", "https://npm.postfmly.com/picomatch/-/picomatch-4.0.7.tgz", {}, "sha512-qcJu88Q2IWqJsDD529JKMdwGm/dvInW4HvQnRwiH9JtihJvzGOscDtHE3x1pBKeUOTysQ8kVmLnJ2kJu7yhcGA=="],
-
-    "pluralize": ["pluralize@8.0.0", "https://npm.postfmly.com/pluralize/-/pluralize-8.0.0.tgz", {}, "sha512-Nc3IT5yHzflTfbjgqWcCPpo7DaKy4FnpB0l/zCAW0Tc7jxAiuqSxHasntB3D7887LSrA93kDJ9IXovxJYxyLCA=="],
 
     "regexp-tree": ["regexp-tree@0.1.27", "https://npm.postfmly.com/regexp-tree/-/regexp-tree-0.1.27.tgz", { "bin": { "regexp-tree": "bin/regexp-tree" } }, "sha512-iETxpjK6YoRWJG5o6hXLwvjYAoW+FEZn9os0PD/b6AP6xQwsa/Y7lCVgIixBbUPMfhu+i2LtdeAqVTgGlQarfA=="],
 
