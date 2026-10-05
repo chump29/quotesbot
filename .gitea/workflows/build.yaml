@@ -29,7 +29,7 @@ jobs:
       - name: Install dependencies
         env:
           NPM_AUTH_TOKEN: ${{ secrets.NPM_AUTH_TOKEN }}
-        run: bun install --frozen-lockfile
+        run: bun ci
 
       - name: Install dotenv-linter
         run: curl -sSfL https://git.io/JLbXn | sh -s -- -b /usr/local/bin
