@@ -89,19 +89,16 @@
 
 ---
 
-<!-- ! TODO: script to load DB from .csv -->
-### 📃 CSV
+### 📃 Quotes
+
+`./db/quotes.csv`
 
 ```csv
 quote,author
-"Some quote",Unknown
+"Some quote",Some Author
 ```
 
-- *NOTES:*
-
-  - `quote` must be start and end with quotation marks
-
-  - `quote` and `author` minimum length must be >= 3
+###### *NOTE: Automatically refreshed during startup* <!-- markdownlint-disable-line MD001 -->
 
 ### 📄 Documentation
 
