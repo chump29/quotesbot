@@ -112,7 +112,7 @@ class QuotesBotDatabase implements IQuotesBotDatabase {
     if ((await this.dbCheck().$count(quotes)) !== allQuotes.length) {
       await this.dbCheck().delete(quotes)
 
-      await this.dbCheck().insert(quotes).values(allQuotes).returning()
+      await this.dbCheck().insert(quotes).values(allQuotes)
 
       if (env.DEBUG) {
         info(`✅ Inserted ${pluralize("quote", allQuotes.length, true)}`)
