@@ -57,15 +57,17 @@
 |:-------------------------:|:-----------:|:--------------:|
 |         Activity          |  ACTIVITY   |    Quoting     |
 |        Channel ID         | CHANNEL_ID  |     \<id>      |
-|        Embed Color        |    COLOR    |    #78866b     |
+|  Embed Color<sup>1</sup>  |    COLOR    |    #78866b     |
 |          DB Name          |   DB_NAME   |  quotesbot.db  |
 |          DB Path          |   DB_PATH   |      ./db      |
 |           Debug           |    DEBUG    | true/**false** |
 |         Bot Name          |    NAME     |   QuotesBot    |
-| Quote Timeout<sup>1</sup> |   TIMEOUT   |       6        |
+| Quote Timeout<sup>2</sup> |   TIMEOUT   |       6        |
 |         Bot Token         |    TOKEN    |    \<token>    |
 
-###### <sup>1</sup> Values: @hourly / {hours} as number (2-23) / @daily (midnight) <!-- markdownlint-disable-line MD001 -->
+###### <sup>1</sup> #RRGGBB format <!-- markdownlint-disable-line MD001 -->
+
+###### <sup>2</sup> Values: @hourly / {hours} as number (2-23) / @daily (midnight)
 
 ##### From `@postfmly/logoserver`:
 

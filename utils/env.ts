@@ -5,7 +5,6 @@ import { bool, cleanEnv, type ExactValidator, makeExactValidator, str, url } fro
 import { anyOf, caseInsensitive, charIn, createRegExp, digit, exactly, wordChar } from "magic-regexp"
 import {
   digits,
-  hexColor,
   integer,
   literal,
   maxLength,
@@ -22,6 +21,8 @@ import {
   union
 } from "valibot"
 
+const COLOR_LEN: number = 6
+
 const MIN_ID_LEN: number = 17
 const MAX_ID_LEN: number = 19
 
@@ -37,7 +38,15 @@ const HMAC_MAX_LEN: number = 38
 
 const StringSchema = pipe(string(), trim(), nonEmpty())
 const IdSchema = pipe(StringSchema, digits(), minLength(MIN_ID_LEN), maxLength(MAX_ID_LEN))
-const ColorSchema = pipe(StringSchema, hexColor())
+const ColorSchema = pipe(
+  StringSchema,
+  regex(
+    // ! Desired: /^(?:#[\da-f]{6})$/i
+    createRegExp(exactly("#").at.lineStart(), charIn("0123456789abcdef").times(COLOR_LEN).at.lineEnd(), [
+      caseInsensitive
+    ])
+  )
+)
 const PortSchema = union([
   literal("random"),
   pipe(StringSchema, toNumber(), integer(), minValue(MIN_PORT), maxValue(MAX_PORT))
@@ -54,7 +63,6 @@ const TimeoutSchema = pipe(
     )
   )
 )
-
 const TokenSchema = pipe(
   StringSchema,
   regex(
