@@ -5,9 +5,7 @@ import { DB } from "./utils/db.ts"
 import { env } from "./utils/env.ts"
 
 try {
-  DB.open()
-
-  await DB.init(await init())
+  DB.load(await init())
 
   info(`🟢 ${env.ACTIVITY}....`)
 } catch (e: unknown) {

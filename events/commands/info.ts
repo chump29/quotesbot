@@ -13,8 +13,8 @@ import {
 
 import { author, version } from "../../package.json" with { type: "json" }
 import { bucket } from "../../utils/bucket.ts"
-import { DB } from "../../utils/db.ts"
 import { env } from "../../utils/env.ts"
+import { Quotes } from "../../utils/quotes.ts"
 
 const create = (): RESTPostAPIChatInputApplicationCommandsJSONBody =>
   new SlashCommandBuilder()
@@ -42,7 +42,7 @@ const invoke = async (interaction: ChatInputCommandInteraction): Promise<void> =
         .setFields({
           inline: true,
           name: "Total Quotes",
-          value: DB.COUNT.toLocaleString()
+          value: Quotes.COUNT.toLocaleString()
         } as APIEmbedField)
         .setFooter({ text: `By ${author.name}` })
     ]

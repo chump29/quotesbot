@@ -1,8 +1,7 @@
-import { default as assert } from "node:assert/strict"
 import { readdir } from "node:fs/promises"
 import { default as path } from "node:path"
 
-import { afterAll, beforeAll, describe, expect, jest, mock, spyOn, test } from "bun:test"
+import { beforeAll, describe, expect, jest, spyOn, test } from "bun:test"
 
 import { type Optional } from "@postfmly/types"
 
@@ -19,10 +18,9 @@ import {
 } from "discord.js"
 import { match } from "ts-pattern"
 
-import { quotes } from "../../db/schema.ts"
 import { author, version } from "../../package.json" with { type: "json" }
-import { DB } from "../../utils/db.ts"
 import { env } from "../../utils/env.ts"
+import { Quotes } from "../../utils/quotes.ts"
 
 interface ICommandFile {
   create: () => RESTPostAPIChatInputApplicationCommandsJSONBody
@@ -39,32 +37,16 @@ const commands: string[] = (await readdir(dir)).filter((file: string): boolean =
 
 const infoSpy: jest.Mock = spyOn(console, "info")
 
-mock.module("global", (): unknown => ({
-  Bun: {
-    stop: jest.fn().mockReturnValue(undefined)
-  }
-}))
-
 beforeAll(async (): Promise<void> => {
   infoSpy.mockReset()
 
-  DB.open()
-
-  assert(DB._db)
-
-  await DB._db.delete(quotes)
-
-  await DB.init({
+  await Quotes.init({
     channels: {
-      fetch: jest.fn().mockResolvedValue({} as Channel)
+      fetch: jest.fn().mockResolvedValue({
+        send: jest.fn().mockResolvedValue(undefined)
+      } as unknown as Channel)
     } as unknown as ChannelManager
   } as Client)
-
-  assert(DB.COUNT > 0)
-})
-
-afterAll((): void => {
-  DB.close()
 })
 
 await Promise.all(

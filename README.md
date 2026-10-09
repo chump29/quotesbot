@@ -10,7 +10,7 @@
 ![SQLite](https://img.shields.io/badge/SQLite-3.49.2-informational?style=plastic&logo=sqlite)
 
 ![CodeQL](https://github.com/chump29/quotesbot/workflows/CodeQL/badge.svg) &nbsp;
-![Coverage](https://img.shields.io/badge/Coverage-88.67%25-success?style=plastic&logo=jest)
+![Coverage](https://img.shields.io/badge/Coverage-90.02%25-success?style=plastic&logo=jest)
 
 ![NO AI](https://img.shields.io/badge/NO-AI-orange?style=plastic "NO AI") &nbsp;
 ![License](https://img.shields.io/github/license/chump29/quotesbot?style=plastic&color=blueviolet&label=License&logo=gplv3 "GPLv3") &nbsp; <!-- markdownlint-disable MD013 -->

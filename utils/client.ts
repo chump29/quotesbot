@@ -7,7 +7,6 @@ import { type Nullable } from "@postfmly/types"
 import { ActivityType, Client, GatewayIntentBits } from "discord.js"
 
 import { loadCommands } from "../events/loadCommands.ts"
-import { DB } from "./db.ts"
 import { env } from "./env.ts"
 
 let SERVER: Nullable<LogoServer> = null
@@ -33,8 +32,6 @@ const shutdown = async (event: string = "ERROR"): Promise<void> => {
   await CLIENT?.destroy()
 
   await SERVER?.stop()
-
-  DB.close()
 
   process.exit(0)
 }

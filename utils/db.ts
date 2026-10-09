@@ -6,39 +6,25 @@ import { info } from "@postfmly/logger"
 import { type Nullable } from "@postfmly/types"
 
 import { default as pluralize } from "@jarrodek/pluralize"
-import { default as csvToJson } from "convert-csv-to-json"
-import { type Channel, type Client } from "discord.js"
-import { sql } from "drizzle-orm"
+import { type Client } from "discord.js"
 import { drizzle } from "drizzle-orm/bun-sqlite"
 import { migrate } from "drizzle-orm/bun-sqlite/migrator"
-import { CronExpressionBuilder, CronExpressionDescriber, SCHEDULES } from "natural-cron"
-import { match } from "ts-pattern"
 
 import { type IQuote, quotes } from "../db/schema.ts"
 import { env } from "./env.ts"
-import { showQuote } from "./quote.ts"
+import { Quotes } from "./quotes.ts"
 
 type DBType = ReturnType<typeof drizzle>
 
 interface IQuotesBotDatabase {
-  _db: Nullable<DBType>
-  _job: Nullable<Bun.CronJob>
-  COUNT: number
-  close: () => void
-  getQuote: () => Promise<IQuote>
-  init: (client: Client) => Promise<void>
-  open: () => void
+  load: (client: Client) => Promise<void>
 }
 
 class QuotesBotDatabase implements IQuotesBotDatabase {
   private client: Nullable<Database> = null
-  _db: Nullable<DBType> = null
+  private _db: Nullable<DBType> = null
 
-  COUNT: number = 0
-
-  _job: Nullable<Bun.CronJob> = null
-
-  open(): void {
+  private open(): void {
     if (this._db && env.DEBUG) {
       info("⚠️  Database already open")
 
@@ -74,7 +60,7 @@ class QuotesBotDatabase implements IQuotesBotDatabase {
     }
   }
 
-  close(): void {
+  private close(): void {
     if (!this._db && env.DEBUG) {
       info("⚠️  Database already closed")
     }
@@ -82,8 +68,7 @@ class QuotesBotDatabase implements IQuotesBotDatabase {
     this.client?.close()
     this.client = null
 
-    this._job?.stop()
-    this._job = null
+    Quotes.stopCron()
 
     this._db = null
 
@@ -100,14 +85,10 @@ class QuotesBotDatabase implements IQuotesBotDatabase {
     return this._db
   }
 
-  private async load(): Promise<void> {
-    const allQuotes: IQuote[] = (await csvToJson
-      .supportQuotedField(true)
-      .getJsonFromCsvAsync(join(env.DB_PATH, "quotes.csv"))) as IQuote[]
+  async load(client: Client): Promise<void> {
+    this.open()
 
-    if (allQuotes.length === 0) {
-      throw new Error("No quotes found")
-    }
+    const allQuotes: IQuote[] = await Quotes.init(client)
 
     if ((await this.dbCheck().$count(quotes)) !== allQuotes.length) {
       await this.dbCheck().delete(quotes)
@@ -118,49 +99,8 @@ class QuotesBotDatabase implements IQuotesBotDatabase {
         info(`✅ Inserted ${pluralize("quote", allQuotes.length, true)}`)
       }
     }
-  }
 
-  async init(client: Client): Promise<void> {
-    await this.load()
-
-    this.COUNT = await this.dbCheck().$count(quotes)
-
-    if (env.DEBUG) {
-      info(`ℹ️  Found ${pluralize("quote", this.COUNT, true)}`)
-    }
-
-    const channel: Nullable<Channel> = await client.channels.fetch(env.CHANNEL_ID)
-    if (!channel) {
-      throw new Error("Could not get channel")
-    }
-
-    const time: string = match<string, string>(env.TIMEOUT)
-      .with("@hourly", (): string => SCHEDULES.EVERY_HOUR)
-      .with("@daily", (): string => SCHEDULES.EVERY_DAY_AT_MIDNIGHT)
-      .otherwise((s: string): string => new CronExpressionBuilder().everyX(Number(s), "hour").compile())
-
-    this._job = Bun.cron(time, async (): Promise<void> => {
-      await showQuote(channel, await DB.getQuote())
-    })
-
-    if (env.DEBUG) {
-      info(`🕒 Runs: ${CronExpressionDescriber.describe(time)}`)
-    }
-  }
-
-  // * /quote
-  async getQuote(): Promise<IQuote> {
-    const [quote]: IQuote[] = await this.dbCheck()
-      .select({ author: quotes.author, quote: quotes.quote })
-      .from(quotes)
-      .orderBy(sql`RANDOM()`)
-      .limit(1)
-
-    if (!quote) {
-      throw new Error("Could not get quote")
-    }
-
-    return quote
+    this.close()
   }
 }
 
