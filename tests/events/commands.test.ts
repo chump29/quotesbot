@@ -35,10 +35,8 @@ const dir: string = "events/commands"
 
 const commands: string[] = (await readdir(dir)).filter((file: string): boolean => file.endsWith(".ts"))
 
-const infoSpy: jest.Mock = spyOn(console, "info")
-
 beforeAll(async (): Promise<void> => {
-  infoSpy.mockReset()
+  spyOn(console, "info").mockImplementation((): void => undefined) // suppress
 
   await Quotes.init({
     channels: {
