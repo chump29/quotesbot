@@ -8,12 +8,12 @@ import { type Channel, type ChannelManager, type Client } from "discord.js"
 import { DB } from "../../utils/db.ts"
 import { env } from "../../utils/env.ts"
 
-const infoSpy: jest.Mock = spyOn(console, "info")
+let infoSpy: jest.Mock
 
 const path: string = join(env.DB_PATH, env.DB_NAME)
 
 beforeAll(async (): Promise<void> => {
-  infoSpy.mockReset()
+  infoSpy = spyOn(console, "info").mockImplementation((): void => undefined) // suppress
 
   for await (const file of glob(`${path}*`)) {
     await unlink(file)
@@ -30,9 +30,8 @@ describe("db", (): void => {
       } as Client)
     ).resolves.toBe(undefined)
 
-    const count: number = 10
-
-    expect(infoSpy).toHaveBeenCalledTimes(count)
+    const TIMES: number = 10
+    expect(infoSpy).toHaveBeenCalledTimes(TIMES)
 
     expect(infoSpy).toHaveBeenNthCalledWith(2, expect.any(String), expect.stringContaining(path))
   })

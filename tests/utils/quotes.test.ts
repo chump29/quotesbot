@@ -4,10 +4,10 @@ import { type Channel, type ChannelManager, type ChatInputCommandInteraction, ty
 
 import { Quotes } from "../../utils/quotes.ts"
 
-const infoSpy: jest.Mock = spyOn(console, "info")
+let infoSpy: jest.Mock
 
 beforeAll(async (): Promise<void> => {
-  infoSpy.mockReset()
+  infoSpy = spyOn(console, "info").mockImplementation((): void => undefined) // suppress
 
   await Quotes.init({
     channels: {
@@ -41,9 +41,9 @@ describe("distraction", (): void => {
     expect(mockEditReply).toHaveBeenCalled()
     expect(payload.content.length).toBeGreaterThan(0)
 
-    const count: number = 4
+    const TIMES: number = 4
+    expect(infoSpy).toHaveBeenCalledTimes(TIMES)
 
-    expect(infoSpy).toHaveBeenCalledTimes(count)
     expect(infoSpy).toHaveBeenNthCalledWith(2, expect.any(String), expect.stringContaining(Quotes.COUNT.toString()))
   })
 })
