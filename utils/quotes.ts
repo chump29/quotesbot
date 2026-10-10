@@ -97,9 +97,7 @@ class QuotesBot implements IQuotesBot {
       .with("@daily", (): string => SCHEDULES.EVERY_DAY_AT_MIDNIGHT)
       .otherwise((s: string): string => new CronExpressionBuilder().everyX(Number(s), "hour").compile())
 
-    Bun.cron(time, async (): Promise<void> => {
-      await this.show()
-    })
+    Bun.cron(time, (): Promise<void> => this.show())
 
     if (env.DEBUG) {
       info(`🕒 Runs: ${CronExpressionDescriber.describe(time)}`)
