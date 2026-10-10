@@ -106,7 +106,7 @@ await Promise.all(
           })
           .with("ping", (): void => expect(payload.content).toInclude("Pong"))
           .with("quote", (): void => expect(payload.content).toInclude("Generated"))
-          .otherwise((): void => {
+          .otherwise((): never => {
             throw new Error(`Payload tests not found for /${name}`)
           })
       })

@@ -1,15 +1,17 @@
 import { error, info } from "@postfmly/logger"
 
-import { init, shutdown } from "./utils/client.ts"
+import { Client } from "./utils/client.ts"
 import { DB } from "./utils/db.ts"
 import { env } from "./utils/env.ts"
 
 try {
-  DB.load(await init())
+  await DB.load(await Client.init())
 
   info(`🟢 ${env.ACTIVITY}....`)
 } catch (e: unknown) {
-  error(e)
+  const msg: string = (e as Error).message
 
-  await shutdown()
+  error(msg)
+
+  await Client.shutdown(msg)
 }

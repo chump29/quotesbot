@@ -25,8 +25,10 @@ class QuotesBotDatabase implements IQuotesBotDatabase {
   private _db: Nullable<DBType> = null
 
   private open(): void {
-    if (this._db && env.DEBUG) {
-      info("⚠️  Database already open")
+    if (this._db) {
+      if (env.DEBUG) {
+        info("⚠️  Database already open")
+      }
 
       return
     }
@@ -61,14 +63,16 @@ class QuotesBotDatabase implements IQuotesBotDatabase {
   }
 
   private close(): void {
-    if (!this._db && env.DEBUG) {
-      info("⚠️  Database already closed")
+    if (!this._db) {
+      if (env.DEBUG) {
+        info("⚠️  Database already closed")
+      }
+
+      return
     }
 
     this.client?.close()
     this.client = null
-
-    Quotes.stopCron()
 
     this._db = null
 

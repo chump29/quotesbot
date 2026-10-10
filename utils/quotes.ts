@@ -1,6 +1,6 @@
 import { join } from "node:path"
 
-import { info } from "@postfmly/logger"
+import { error, info } from "@postfmly/logger"
 import { type Nullable } from "@postfmly/types"
 
 import { default as pluralize } from "@jarrodek/pluralize"
@@ -13,18 +13,17 @@ import { exhaustiveUniqueRandom } from "unique-random"
 import { type IQuote } from "../db/schema.ts"
 import { env } from "./env.ts"
 
+const WRONG: string = "-# > ❌ Something went wrong."
+
 interface IQuotesBot {
   readonly COUNT: number
   init: (client: Client) => Promise<IQuote[]>
   show: (interaction?: ChatInputCommandInteraction) => Promise<void>
-  stopCron: () => void
 }
 
 class QuotesBot implements IQuotesBot {
   private QUOTES: IQuote[] = []
   private random: Nullable<ReturnType<typeof exhaustiveUniqueRandom>> = null
-
-  private _job: Nullable<Bun.CronJob> = null
 
   private CHANNEL: Nullable<Channel> = null
 
@@ -32,17 +31,8 @@ class QuotesBot implements IQuotesBot {
     return this.QUOTES.length
   }
 
-  stopCron(): void {
-    this._job?.stop()
-    this._job = null
-  }
-
   private getQuote(): Nullable<IQuote> {
-    if (this.random === null) {
-      throw new Error("Could not get random")
-    }
-
-    return this.QUOTES[this.random()] ?? null
+    return this.random ? (this.QUOTES[this.random()] ?? null) : null
   }
 
   // * /quote
@@ -53,8 +43,10 @@ class QuotesBot implements IQuotesBot {
 
     if (!this.CHANNEL) {
       if (interaction) {
-        await interaction.editReply({ content: "-# > ❌ Could not get channel" })
+        await interaction.editReply({ content: WRONG })
       }
+
+      error("Could not get channel")
 
       return
     }
@@ -62,8 +54,10 @@ class QuotesBot implements IQuotesBot {
     const quote: Nullable<IQuote> = this.getQuote()
     if (!quote) {
       if (interaction) {
-        await interaction.editReply({ content: "-# > ❌ Could not get quote" })
+        await interaction.editReply({ content: WRONG })
       }
+
+      error("Could not get quote")
 
       return
     }
@@ -103,7 +97,7 @@ class QuotesBot implements IQuotesBot {
       .with("@daily", (): string => SCHEDULES.EVERY_DAY_AT_MIDNIGHT)
       .otherwise((s: string): string => new CronExpressionBuilder().everyX(Number(s), "hour").compile())
 
-    this._job = Bun.cron(time, async (): Promise<void> => {
+    Bun.cron(time, async (): Promise<void> => {
       await this.show()
     })
 

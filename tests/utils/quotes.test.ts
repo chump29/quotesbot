@@ -1,4 +1,4 @@
-import { afterAll, beforeAll, describe, expect, jest, spyOn, test } from "bun:test"
+import { beforeAll, describe, expect, jest, spyOn, test } from "bun:test"
 
 import { type Channel, type ChannelManager, type ChatInputCommandInteraction, type Client } from "discord.js"
 
@@ -16,10 +16,6 @@ beforeAll(async (): Promise<void> => {
       } as unknown as Channel)
     } as unknown as ChannelManager
   } as Client)
-})
-
-afterAll((): void => {
-  Quotes.stopCron()
 })
 
 describe("distraction", (): void => {
@@ -45,7 +41,9 @@ describe("distraction", (): void => {
     expect(mockEditReply).toHaveBeenCalled()
     expect(payload.content.length).toBeGreaterThan(0)
 
-    const TIMES: number = 4
-    expect(infoSpy).toHaveBeenCalledTimes(TIMES)
+    const count: number = 4
+
+    expect(infoSpy).toHaveBeenCalledTimes(count)
+    expect(infoSpy).toHaveBeenNthCalledWith(2, expect.any(String), expect.stringContaining(Quotes.COUNT.toString()))
   })
 })

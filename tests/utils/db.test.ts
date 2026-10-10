@@ -10,10 +10,12 @@ import { env } from "../../utils/env.ts"
 
 const infoSpy: jest.Mock = spyOn(console, "info")
 
+const path: string = join(env.DB_PATH, env.DB_NAME)
+
 beforeAll(async (): Promise<void> => {
   infoSpy.mockReset()
 
-  for await (const file of glob(join(env.DB_PATH, `${env.DB_NAME}*`))) {
+  for await (const file of glob(`${path}*`)) {
     await unlink(file)
   }
 })
@@ -28,7 +30,10 @@ describe("db", (): void => {
       } as Client)
     ).resolves.toBe(undefined)
 
-    const TIMES: number = 10
-    expect(infoSpy).toHaveBeenCalledTimes(TIMES)
+    const count: number = 10
+
+    expect(infoSpy).toHaveBeenCalledTimes(count)
+
+    expect(infoSpy).toHaveBeenNthCalledWith(2, expect.any(String), expect.stringContaining(path))
   })
 })
