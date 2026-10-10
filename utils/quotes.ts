@@ -46,7 +46,7 @@ class QuotesBot implements IQuotesBot {
         await interaction.editReply({ content: WRONG })
       }
 
-      error("Could not get channel")
+      error("❌ Could not get channel")
 
       return
     }
@@ -57,7 +57,7 @@ class QuotesBot implements IQuotesBot {
         await interaction.editReply({ content: WRONG })
       }
 
-      error("Could not get quote")
+      error("❌ Could not get quote")
 
       return
     }
