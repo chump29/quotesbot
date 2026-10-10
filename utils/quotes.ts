@@ -13,7 +13,7 @@ import { exhaustiveUniqueRandom } from "unique-random"
 import { type IQuote } from "../db/schema.ts"
 import { env } from "./env.ts"
 
-const WRONG: string = "-# > ❌ Something went wrong."
+const WRONG: string = "-# > ❌ Something went wrong"
 
 interface IQuotesBot {
   readonly COUNT: number
