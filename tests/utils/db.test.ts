@@ -3,7 +3,7 @@ import { join } from "node:path"
 
 import { beforeAll, describe, expect, jest, spyOn, test } from "bun:test"
 
-import { type Channel, type ChannelManager, type Client } from "discord.js"
+import { type ChannelManager, type Client, type TextChannel } from "discord.js"
 
 import { DB } from "../../utils/db.ts"
 import { env } from "../../utils/env.ts"
@@ -25,7 +25,7 @@ describe("db", (): void => {
     expect(
       DB.load({
         channels: {
-          fetch: jest.fn().mockResolvedValue({} as unknown as Channel)
+          fetch: jest.fn().mockResolvedValue({} as unknown as TextChannel)
         } as unknown as ChannelManager
       } as Client)
     ).resolves.toBe(undefined)

@@ -1,6 +1,6 @@
 import { beforeAll, describe, expect, jest, spyOn, test } from "bun:test"
 
-import { type Channel, type ChannelManager, type ChatInputCommandInteraction, type Client } from "discord.js"
+import { type ChannelManager, type ChatInputCommandInteraction, type Client, type TextChannel } from "discord.js"
 
 import { Quotes } from "../../utils/quotes.ts"
 
@@ -13,7 +13,7 @@ beforeAll(async (): Promise<void> => {
     channels: {
       fetch: jest.fn().mockResolvedValue({
         send: jest.fn().mockResolvedValue(undefined)
-      } as unknown as Channel)
+      } as unknown as TextChannel)
     } as unknown as ChannelManager
   } as Client)
 })

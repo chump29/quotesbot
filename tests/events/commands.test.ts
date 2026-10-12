@@ -8,7 +8,6 @@ import { type Optional } from "@postfmly/types"
 import { fakerEN_US as fake } from "@faker-js/faker"
 import {
   type APIEmbed,
-  type Channel,
   type ChannelManager,
   type ChatInputCommandInteraction,
   type Client,
@@ -43,7 +42,7 @@ beforeAll(async (): Promise<void> => {
     channels: {
       fetch: jest.fn().mockResolvedValue({
         send: jest.fn().mockResolvedValue(undefined)
-      } as unknown as Channel)
+      } as unknown as TextChannel)
     } as unknown as ChannelManager
   } as Client)
 })
