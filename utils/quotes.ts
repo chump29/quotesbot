@@ -13,8 +13,6 @@ import { exhaustiveUniqueRandom } from "unique-random"
 import { type IQuote } from "../db/schema.ts"
 import { env } from "./env.ts"
 
-const WRONG: string = "-# > ❌ Something went wrong"
-
 interface IQuotesBot {
   readonly COUNT: number
   init: (client: Client) => Promise<IQuote[]>
@@ -23,6 +21,7 @@ interface IQuotesBot {
 
 class QuotesBot implements IQuotesBot {
   private QUOTES: IQuote[] = []
+
   private random!: ReturnType<typeof exhaustiveUniqueRandom>
 
   private CHANNEL!: TextChannel
@@ -37,20 +36,10 @@ class QuotesBot implements IQuotesBot {
       await interaction.deferReply({ flags: MessageFlags.Ephemeral })
     }
 
-    if (!this.CHANNEL) {
-      if (interaction) {
-        await interaction.editReply({ content: WRONG })
-      }
-
-      error("❌ Could not get channel")
-
-      return
-    }
-
     const quote: Optional<IQuote> = this.QUOTES[this.random()]
     if (!quote) {
       if (interaction) {
-        await interaction.editReply({ content: WRONG })
+        await interaction.editReply({ content: "-# > ❌ Something went wrong" })
       }
 
       error("❌ Could not get quote")
@@ -58,7 +47,7 @@ class QuotesBot implements IQuotesBot {
       return
     }
 
-    await (this.CHANNEL as TextChannel).send({
+    await this.CHANNEL.send({
       content: `-# > "${quote.quote}" — ${quote.author}`,
       flags: MessageFlags.SuppressNotifications
     })

@@ -13,7 +13,6 @@ import {
   type ChatInputCommandInteraction,
   type Client,
   EmbedBuilder,
-  type Guild,
   type RESTPostAPIChatInputApplicationCommandsJSONBody,
   type TextChannel,
   type User
@@ -66,16 +65,14 @@ await Promise.all(
 
       test("invoke", async (): Promise<void> => {
         const interaction: ChatInputCommandInteraction = {
+          channels: {
+            fetch: jest.fn().mockResolvedValue({
+              send: jest.fn().mockResolvedValue(undefined)
+            } as unknown as TextChannel)
+          } as unknown as ChannelManager,
           createdTimestamp: fake.date.past().getTime(),
           deferReply: jest.fn().mockResolvedValue(undefined),
           editReply: jest.fn().mockResolvedValue(undefined),
-          guild: {
-            channels: {
-              fetch: jest.fn().mockResolvedValue({
-                send: jest.fn().mockResolvedValue(undefined)
-              } as unknown as TextChannel)
-            } as unknown as ChannelManager
-          } as Guild,
           user: {
             username: fake.internet.username()
           } as User
