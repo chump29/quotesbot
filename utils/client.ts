@@ -2,7 +2,6 @@ import { default as process } from "node:process"
 
 import { error, info } from "@postfmly/logger"
 import { type ILogoServerConfig, LogoServer } from "@postfmly/logoserver"
-import { type Nullable } from "@postfmly/types"
 
 import { ActivityType, Client as DiscordClient, GatewayIntentBits } from "discord.js"
 
@@ -15,11 +14,11 @@ interface IQuotesClient {
 }
 
 class QuotesClient implements IQuotesClient {
-  private CLIENT: Nullable<DiscordClient> = null
+  private CLIENT!: DiscordClient
 
-  private LOGO_SERVER: Nullable<LogoServer> = null
+  private LOGO_SERVER!: LogoServer
 
-  private isShutdown: boolean = false
+  private isShutdown: boolean = true
 
   async shutdown(event?: string): Promise<void> {
     if (this.isShutdown) {
@@ -32,20 +31,16 @@ class QuotesClient implements IQuotesClient {
 
     info("🔴 Shutting down...")
 
+    await this.CLIENT.destroy()
+
+    await this.LOGO_SERVER.stop()
+
     this.isShutdown = true
-
-    await this.CLIENT?.destroy()
-
-    await this.LOGO_SERVER?.stop()
 
     process.exit(0)
   }
 
   private async login(): Promise<void> {
-    if (!this.CLIENT) {
-      throw new Error("Invalid CLIENT")
-    }
-
     await this.CLIENT.login(env.TOKEN)
 
     if (this.CLIENT.user && env.DEBUG) {
@@ -90,6 +85,8 @@ class QuotesClient implements IQuotesClient {
     await loadCommands(this.CLIENT)
 
     await this.login()
+
+    this.isShutdown = false
 
     return this.CLIENT
   }

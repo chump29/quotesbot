@@ -1,7 +1,7 @@
 import { join } from "node:path"
 
 import { error, info } from "@postfmly/logger"
-import { type Nullable } from "@postfmly/types"
+import { type Nullable, type Optional } from "@postfmly/types"
 
 import { default as pluralize } from "@jarrodek/pluralize"
 import { default as csvToJson } from "convert-csv-to-json"
@@ -23,16 +23,12 @@ interface IQuotesBot {
 
 class QuotesBot implements IQuotesBot {
   private QUOTES: IQuote[] = []
-  private random: Nullable<ReturnType<typeof exhaustiveUniqueRandom>> = null
+  private random!: ReturnType<typeof exhaustiveUniqueRandom>
 
-  private CHANNEL: Nullable<Channel> = null
+  private CHANNEL!: TextChannel
 
   get COUNT(): number {
     return this.QUOTES.length
-  }
-
-  private getQuote(): Nullable<IQuote> {
-    return this.random ? (this.QUOTES[this.random()] ?? null) : null
   }
 
   // * /quote
@@ -51,7 +47,7 @@ class QuotesBot implements IQuotesBot {
       return
     }
 
-    const quote: Nullable<IQuote> = this.getQuote()
+    const quote: Optional<IQuote> = this.QUOTES[this.random()]
     if (!quote) {
       if (interaction) {
         await interaction.editReply({ content: WRONG })
@@ -87,10 +83,12 @@ class QuotesBot implements IQuotesBot {
       info(`ℹ️  Found ${pluralize("quote", this.COUNT, true)}`)
     }
 
-    this.CHANNEL = await client.channels.fetch(env.CHANNEL_ID)
-    if (!this.CHANNEL) {
+    const channel: Nullable<Channel> = await client.channels.fetch(env.CHANNEL_ID)
+    if (!channel) {
       throw new Error("Could not get channel")
     }
+
+    this.CHANNEL = channel as TextChannel
 
     const time: string = match<string, string>(env.TIMEOUT)
       .with("@hourly", (): string => SCHEDULES.EVERY_HOUR)
