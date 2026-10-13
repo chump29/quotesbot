@@ -12,7 +12,7 @@ beforeAll(async (): Promise<void> => {
   await Quotes.init({
     channels: {
       fetch: jest.fn().mockResolvedValue({
-        send: jest.fn().mockResolvedValue(undefined)
+        send: jest.fn()
       } as unknown as TextChannel)
     } as unknown as ChannelManager
   } as Client)
@@ -25,8 +25,8 @@ describe("distraction", (): void => {
 
   test("show", (): void => {
     const interaction: ChatInputCommandInteraction = {
-      deferReply: jest.fn().mockResolvedValue(undefined),
-      editReply: jest.fn().mockResolvedValue(undefined)
+      deferReply: jest.fn(),
+      editReply: jest.fn()
     } as unknown as ChatInputCommandInteraction
 
     expect(Quotes.show(interaction)).resolves.toBe(undefined)
