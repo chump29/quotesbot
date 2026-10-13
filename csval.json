@@ -1,5 +1,6 @@
 {
   "$comment": "https://ajv.js.org/",
+  "additionalProperties": false,
   "required": ["author", "quote"],
   "properties": {
     "author": {
