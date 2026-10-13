@@ -5,8 +5,6 @@ services:
     restart: unless-stopped
     ports:
       - "8005:8005"
-    volumes:
-      - db:/app/db
     environment:
       - LOGO_PORT=8005
       - LOGO_URL=https://quotesbot.postfmly.us/quotesbot.webp
@@ -17,8 +15,4 @@ services:
       - homepage.group=Personal
       - homepage.name=QuotesBot
       - homepage.icon=https://quotesbot.postfmly.com/quotesbot.webp
-
-volumes:
-  db:
-
 networks: {}

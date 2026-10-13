@@ -25,18 +25,6 @@ describe("env", (): void => {
     expect(env.COLOR).toHaveLength(LEN)
   })
 
-  test("DB_NAME", (): void => {
-    expectTypeOf(env.DB_NAME).toEqualTypeOf<string>()
-
-    expect(env.DB_NAME.length).toBeGreaterThan(0)
-  })
-
-  test("DB_PATH", (): void => {
-    expectTypeOf(env.DB_PATH).toEqualTypeOf<string>()
-
-    expect(env.DB_PATH.length).toBeGreaterThan(0)
-  })
-
   test("DEBUG", (): void => {
     expectTypeOf(env.DEBUG).toEqualTypeOf<boolean>()
 

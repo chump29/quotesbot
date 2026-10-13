@@ -2,13 +2,11 @@
 
 !.husky/prepare.min.mjs
 !bun.lock
-!db/
 !events/
 !healthcheck.sh
 !index.ts
 !package.json
 !patches/
+!quotes.csv
 !tsconfig.json
 !utils/
-
-db/quotesbot*

@@ -1,5 +1,4 @@
 .env.local
 .vscode
 coverage/
-db/quotesbot*
 node_modules/

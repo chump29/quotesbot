@@ -19,8 +19,7 @@ FROM oven/bun:alpine
 
 # hadolint ignore=DL3018
 RUN apk add --no-cache \
-  tzdata \
-  sqlite
+  tzdata
 
 WORKDIR /app
 

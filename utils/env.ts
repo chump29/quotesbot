@@ -109,8 +109,6 @@ const env = cleanEnv(Bun.env, {
   ACTIVITY: str({ default: "Quoting" }),
   CHANNEL_ID: idValidator({ testDefault: fakeId }),
   COLOR: colorValidator({ default: "#78866b" }),
-  DB_NAME: str({ default: "quotesbot.db", testDefault: "quotesbot.test.db" }),
-  DB_PATH: str({ default: "./db" }),
   DEBUG: bool({ default: false, testDefault: true }),
   LOGO_NAME: str({ default: "quotesbot.webp" }),
   LOGO_PATH: str({ default: "./utils/images" }),

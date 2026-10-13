@@ -1,5 +1,3 @@
-import { join } from "node:path"
-
 import { error, info } from "@postfmly/logger"
 import { type Nullable, type Optional } from "@postfmly/types"
 
@@ -10,8 +8,12 @@ import { CronExpressionBuilder, CronExpressionDescriber, SCHEDULES } from "natur
 import { match } from "ts-pattern"
 import { exhaustiveUniqueRandom } from "unique-random"
 
-import { type IQuote } from "../db/schema.ts"
 import { env } from "./env.ts"
+
+interface IQuote {
+  author: string
+  quote: string
+}
 
 interface IQuotesBot {
   readonly COUNT: number
@@ -58,9 +60,7 @@ class QuotesBot implements IQuotesBot {
   }
 
   async init(client: Client): Promise<IQuote[]> {
-    this.QUOTES = (await csvToJson
-      .supportQuotedField(true)
-      .getJsonFromCsvAsync(join(env.DB_PATH, "quotes.csv"))) as IQuote[]
+    this.QUOTES = (await csvToJson.supportQuotedField(true).getJsonFromCsvAsync("quotes.csv")) as IQuote[]
 
     if (this.COUNT === 0) {
       throw new Error("No quotes found")
