@@ -28,7 +28,7 @@
     "lint": "bun run lint:spell && bun run lint:biome && bun run lint:env && bun run lint:csv && bun run lint:ts",
     "lint:biome": "bun run --bun biome check --write --verbose --reporter=default --reporter=github --error-on-warnings",
     "lint:biome:ci": "bun run --bun biome ci --verbose --reporter=default --reporter=github --error-on-warnings",
-    "lint:csv": "bun run --bun csval db/quotes.csv csval.json",
+    "lint:csv": "bun run --bun csval **/*.csv csval.json",
     "lint:env": "bun run --bun dotenv-linter check .",
     "lint:spell": "bun run --bun cspell --dot --verbose .",
     "lint:ts": "bun check",
@@ -45,14 +45,10 @@
     "test:full": "bun test --isolate --bail",
     "updates": "bunx --bun npm-check-updates --dep overrides,prod,dev --cooldown 0 --install never --packageManager bun --peer"
   },
-  "lint-staged": {
-    "*.{json,ts}": "bun run --bun biome ci --no-errors-on-unmatched --error-on-warnings",
-    ".env*": "bun run --bun dotenv-linter check"
-  },
   "overrides": {
     "@biomejs/biome": "2.5.15",
     "@discordjs/collection": "2.1.1",
-    "@types/bun": "1.4.2",
+    "@types/bun": "1.4.3",
     "@types/node": "26.6.5",
     "chalk": "6.0.1",
     "cspell": "10.3.6",
