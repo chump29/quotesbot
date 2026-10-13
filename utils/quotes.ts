@@ -5,6 +5,7 @@ import { default as pluralize } from "@jarrodek/pluralize"
 import { default as csvToJson } from "convert-csv-to-json"
 import { type Channel, type ChatInputCommandInteraction, type Client, MessageFlags, type TextChannel } from "discord.js"
 import { CronExpressionBuilder, CronExpressionDescriber, SCHEDULES } from "natural-cron"
+import { titleCase } from "title-case"
 import { match } from "ts-pattern"
 import { exhaustiveUniqueRandom } from "unique-random"
 
@@ -60,7 +61,15 @@ class QuotesBot implements IQuotesBot {
   }
 
   async init(client: Client): Promise<IQuote[]> {
-    this.QUOTES = (await csvToJson.supportQuotedField(true).getJsonFromCsvAsync("quotes.csv")) as IQuote[]
+    this.QUOTES = (await csvToJson
+      .supportQuotedField(true)
+      .formatValueByType(true)
+      .mapRows((row: IQuote): IQuote => {
+        row.author = titleCase(row.author.trim())
+
+        return row
+      })
+      .getJsonFromCsvAsync("quotes.csv")) as IQuote[]
 
     if (this.COUNT === 0) {
       throw new Error("No quotes found")
