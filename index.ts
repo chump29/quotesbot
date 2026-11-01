@@ -9,7 +9,7 @@ try {
 
   info(`🟢 ${env.ACTIVITY}....`)
 } catch (e: unknown) {
-  const msg: string = (e as Error).message
+  const msg = e instanceof Error ? e.message : String(e)
 
   error(`❌ ${msg}`)
 

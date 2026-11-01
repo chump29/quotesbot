@@ -1,47 +1,69 @@
-import { beforeAll, describe, expect, jest, spyOn, test } from "bun:test"
+import { beforeAll, describe, expect, mock, spyOn, test } from "bun:test"
 
-import { type ChannelManager, type ChatInputCommandInteraction, type Client, type TextChannel } from "discord.js"
+import { fakerEN_US as fake } from "@faker-js/faker"
+import { type Channel, ChannelType, type ChatInputCommandInteraction, type Client, type TextChannel } from "discord.js"
 
+import { env } from "../../utils/env.ts"
 import { Quotes } from "../../utils/quotes.ts"
 
-let infoSpy: jest.Mock
+const infoSpy = spyOn(console, "info")
+if (!env.TEST_FULL) {
+  infoSpy.mockImplementation((): void => undefined)
+}
 
 beforeAll(async (): Promise<void> => {
-  infoSpy = spyOn(console, "info").mockImplementation((): void => undefined) // suppress
+  const mockSend = mock<TextChannel["send"]>()
 
-  await Quotes.init({
-    channels: {
-      fetch: jest.fn().mockResolvedValue({
-        send: jest.fn()
-      } as unknown as TextChannel)
-    } as unknown as ChannelManager
-  } as Client)
+  await Quotes.init(
+    createMock<Client>({
+      channels: {
+        fetch: createMock<Channel>({
+          send: mockSend,
+          type: ChannelType.GuildText
+        })
+      }
+    })
+  )
 })
 
 describe("distraction", (): void => {
+  // biome-ignore lint/nursery/useLowercaseTestTitle: getter name
   test("COUNT", (): void => {
     expect(Quotes.COUNT).toBeGreaterThan(0)
   })
 
   test("show", (): void => {
-    const interaction: ChatInputCommandInteraction = {
-      deferReply: jest.fn(),
-      editReply: jest.fn()
-    } as unknown as ChatInputCommandInteraction
+    const [mockDeferReply, mockEditReply] = [
+      mock<ChatInputCommandInteraction["deferReply"]>(),
+      mock<ChatInputCommandInteraction["editReply"]>()
+    ]
 
-    expect(Quotes.show(interaction)).resolves.toBe(undefined)
+    expect(
+      Quotes.show(
+        createMock<ChatInputCommandInteraction>({
+          createdTimestamp: fake.date.past().getTime(),
+          deferReply: mockDeferReply,
+          editReply: mockEditReply
+        })
+      )
+    ).resolves.toBe(undefined)
 
-    const mockEditReply = interaction.editReply as ReturnType<typeof jest.fn>
-    const firstCallArgs = mockEditReply.mock.calls
-    const payload = firstCallArgs[0]?.[0]
-    if (!payload) {
+    expect(mockDeferReply).toHaveBeenCalledOnce()
+    expect(mockEditReply).toHaveBeenCalledOnce()
+
+    const payload = mockEditReply.mock.calls[0]?.[0]
+    if (!payload || typeof payload !== "object") {
       throw new Error("Payload not found")
     }
 
-    expect(mockEditReply).toHaveBeenCalled()
-    expect(payload.content.length).toBeGreaterThan(0)
+    let content = ""
+    if ("content" in payload && typeof payload.content === "string") {
+      ;({ content } = payload)
+    }
 
-    const TIMES: number = 4
+    expect(content.length).toBeGreaterThan(0)
+
+    const TIMES = 4
     expect(infoSpy).toHaveBeenCalledTimes(TIMES)
 
     expect(infoSpy).toHaveBeenNthCalledWith(2, expect.any(String), expect.stringContaining(Quotes.COUNT.toString()))

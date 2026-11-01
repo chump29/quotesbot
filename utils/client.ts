@@ -54,7 +54,7 @@ class QuotesClient implements IQuotesClient {
       LOGO_NAME: env.LOGO_NAME,
       LOGO_PATH: env.LOGO_PATH,
       LOGO_PORT: env.LOGO_PORT
-    } as ILogoServerConfig)
+    } satisfies ILogoServerConfig)
 
     await this.LOGO_SERVER.start()
 
@@ -92,6 +92,4 @@ class QuotesClient implements IQuotesClient {
   }
 }
 
-const Client: IQuotesClient = new QuotesClient()
-
-export { Client }
+export const Client = new QuotesClient()

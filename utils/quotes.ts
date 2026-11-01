@@ -1,9 +1,8 @@
 import { error, info } from "@postfmly/logger"
-import { type Nullable, type Optional } from "@postfmly/types"
 
 import { default as pluralize } from "@jarrodek/pluralize"
 import { default as csvToJson } from "convert-csv-to-json"
-import { type Channel, type ChatInputCommandInteraction, type Client, MessageFlags, type TextChannel } from "discord.js"
+import { ChannelType, type ChatInputCommandInteraction, type Client, MessageFlags, type TextChannel } from "discord.js"
 import { CronExpressionBuilder, CronExpressionDescriber, SCHEDULES } from "natural-cron"
 import { titleCase } from "title-case"
 import { match } from "ts-pattern"
@@ -39,7 +38,7 @@ class QuotesBot implements IQuotesBot {
       await interaction.deferReply({ flags: MessageFlags.Ephemeral })
     }
 
-    const quote: Optional<IQuote> = this.QUOTES[this.random()]
+    const quote = this.QUOTES[this.random()]
     if (!quote) {
       if (interaction) {
         await interaction.editReply({ content: "-# > ❌ Something went wrong" })
@@ -69,7 +68,7 @@ class QuotesBot implements IQuotesBot {
 
         return row
       })
-      .getJsonFromCsvAsync("quotes.csv")) as IQuote[]
+      .getJsonFromCsvAsync("quotes.csv")) satisfies IQuote[]
 
     if (this.COUNT === 0) {
       throw new Error("No quotes found")
@@ -81,14 +80,14 @@ class QuotesBot implements IQuotesBot {
       info(`ℹ️  Found ${pluralize("quote", this.COUNT, true)}`)
     }
 
-    const channel: Nullable<Channel> = await client.channels.fetch(env.CHANNEL_ID)
-    if (!channel) {
+    const channel = await client.channels.fetch(env.CHANNEL_ID)
+    if (channel?.type !== ChannelType.GuildText) {
       throw new Error("Could not get channel")
     }
 
-    this.CHANNEL = channel as TextChannel
+    this.CHANNEL = channel
 
-    const time: string = match<string, string>(env.TIMEOUT)
+    const time = match<string, string>(env.TIMEOUT)
       .with("@hourly", (): string => SCHEDULES.EVERY_HOUR)
       .with("@daily", (): string => SCHEDULES.EVERY_DAY_AT_MIDNIGHT)
       .otherwise((s: string): string => new CronExpressionBuilder().everyX(Number(s), "hour").compile())
@@ -103,6 +102,4 @@ class QuotesBot implements IQuotesBot {
   }
 }
 
-const Quotes: IQuotesBot = new QuotesBot()
-
-export { Quotes }
+export const Quotes = new QuotesBot()
