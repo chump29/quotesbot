@@ -81,7 +81,6 @@ await Promise.all(
                 getString: mock<() => string>().mockReturnValue("all")
               },
               user: {
-                displayName: fake.internet.displayName(),
                 username: fake.internet.username()
               }
             })
