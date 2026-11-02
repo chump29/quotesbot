@@ -2,6 +2,7 @@
 
 import { describe, expect, test } from "bun:test"
 
+import { type HexColorString } from "discord.js"
 import { expectTypeOf } from "expect-type"
 
 import { env } from "../../utils/env.ts"
@@ -20,7 +21,7 @@ describe("env", (): void => {
   })
 
   test("COLOR", (): void => {
-    expect(env.COLOR).toBeString()
+    expectTypeOf(env.COLOR).toEqualTypeOf<HexColorString>()
 
     const LEN = 7
 
