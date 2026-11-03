@@ -5,7 +5,7 @@
 ---
 
 ![Bun](https://img.shields.io/badge/Bun-1.4.4-informational?style=plastic&logo=bun) &nbsp;
-![discord.js](https://img.shields.io/badge/discord.js-^14.28.0-informational?style=plastic&logo=discord.js) &nbsp;
+![discord.js](https://img.shields.io/badge/discord.js-14.28.0-informational?style=plastic&logo=discord.js) &nbsp;
 
 ![CodeQL](https://github.com/chump29/quotesbot/workflows/CodeQL/badge.svg) &nbsp;
 ![Coverage](https://img.shields.io/badge/Coverage-81.18%25-success?style=plastic&logo=jest)
