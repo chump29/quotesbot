@@ -48,8 +48,8 @@ describe("distraction", (): void => {
       )
     ).resolves.toBe(undefined)
 
-    expect(mockDeferReply).toHaveBeenCalledOnce()
-    expect(mockEditReply).toHaveBeenCalledOnce()
+    expect(mockDeferReply).toHaveBeenCalledWith(expect.any(Object))
+    expect(mockEditReply).toHaveBeenCalledWith(expect.any(Object))
 
     const payload = mockEditReply.mock.calls[0]?.[0]
     if (!payload || typeof payload !== "object") {

@@ -1,0 +1,26 @@
+# yaml-language-server: $schema=https://lefthook.dev/schema.json
+
+glob_matcher: doublestar
+
+pre-commit:
+  parallel: true
+  jobs:
+    - name: cSpell
+      run: bun run --bun cspell --dot --no-must-find-files {staged_files}
+
+    - name: TS Check
+      run: bun check
+
+    - name: JSON/MD/TS/YAML
+      glob: "**/*.{json,md,ts,yaml}"
+      run: bun run --bun biome ci --no-errors-on-unmatched --error-on-warnings {staged_files}
+
+    - name: CSV
+      glob: "**/*.csv"
+      run: bun run --bun csval {staged_files} csval.json
+
+    - name: Deps
+      run: bun run deps
+
+    - name: Scan
+      run: bun run scan

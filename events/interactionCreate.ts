@@ -1,18 +1,16 @@
-import { join } from "node:path"
+import { type Interaction } from "discord.js"
 
-import { type ChatInputCommandInteraction, type Interaction } from "discord.js"
+import { cache } from "./cache.ts"
 
-interface IInvoke {
-  invoke: (interaction: ChatInputCommandInteraction) => Promise<void>
-}
-
-const invoke = async (interaction: Interaction): Promise<void> => {
+export const invoke = async (interaction: Interaction): Promise<void> => {
   if (!interaction.isChatInputCommand()) {
     return
   }
 
-  const file: IInvoke = await import(join(import.meta.dir, "commands", interaction.commandName))
-  await file.invoke(interaction)
-}
+  const command = cache.get(interaction.commandName)
+  if (!command) {
+    return
+  }
 
-export { type IInvoke, invoke }
+  await command.invoke(interaction)
+}

@@ -1,6 +1,5 @@
 *
 
-!.husky/prepare.min.mjs
 !bun.lock
 !events/
 !healthcheck.sh

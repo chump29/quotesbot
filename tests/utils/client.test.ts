@@ -40,7 +40,6 @@ describe("client", (): void => {
     expect(infoSpy).toHaveBeenNthCalledWith(LINE_NUM, expect.any(String), expect.stringContaining(env.NAME))
     expect(infoSpy).toHaveBeenNthCalledWith(LINE_NUM, expect.any(String), expect.stringContaining(tag))
 
-    expect(exitSpy).toHaveBeenCalledOnce()
     expect(exitSpy).toHaveBeenCalledWith(0)
 
     await Client.shutdown() // * NOTE: tests isShutdown

@@ -4,25 +4,25 @@
 
 ---
 
-![Bun](https://img.shields.io/badge/Bun-1.4.4-informational?style=plastic&logo=bun) &nbsp;
-![discord.js](https://img.shields.io/badge/discord.js-14.28.0-informational?style=plastic&logo=discord.js) &nbsp;
+![Bun](https://img.shields.io/badge/Bun-1.4.5-informational?style=plastic&logo=bun) &nbsp;
+![discord.js](https://img.shields.io/badge/discord.js-14.28.1-informational?style=plastic&logo=discord.js) &nbsp;
 
 ![CodeQL](https://github.com/chump29/quotesbot/workflows/CodeQL/badge.svg) &nbsp;
-![Coverage](https://img.shields.io/badge/Coverage-81.41%25-success?style=plastic&logo=jest)
+![Coverage](https://img.shields.io/badge/Coverage-79.34%25-success?style=plastic&logo=jest)
 
 ![NO AI](https://img.shields.io/badge/NO-AI-orange?style=plastic "NO AI") &nbsp;
-![License](https://img.shields.io/github/license/chump29/quotesbot?style=plastic&color=blueviolet&label=License&logo=gplv3 "GPLv3") &nbsp; <!-- markdownlint-disable MD013 -->
+![License](https://img.shields.io/github/license/chump29/quotesbot?style=plastic&color=blueviolet&label=License&logo=gplv3 "GPLv3") &nbsp;
 ![CVE Scan](https://img.shields.io/badge/CVE%20Scan-Pass-success?style=plastic&logo=owasp "CVE Scan")
 
 ---
 
-### What it does: <!-- markdownlint-disable-line MD001 -->
+### What it does:
 
 - Generates inspirational quotes
 
 ---
 
-### 🔗 Invite Link <!-- markdownlint-disable-line MD001 -->
+### 🔗 Invite Link
 
 [Add QuotesBot](https://discord.com/oauth2/authorize?client_id=1499785850303545454&permissions=3072&integration_type=0&scope=bot)
 
@@ -61,7 +61,7 @@
 | Quote Timeout<sup>2</sup> |   TIMEOUT   |       6        |
 |         Bot Token         |    TOKEN    |    \<token>    |
 
-###### <sup>1</sup> #RRGGBB format <!-- markdownlint-disable-line MD001 -->
+###### <sup>1</sup> #RRGGBB format
 
 ###### <sup>2</sup> Values: @hourly / {hours} as number (2-23) / @daily (midnight)
 
@@ -96,7 +96,7 @@ quote,author
 "Some quote, or another.",Some Author
 ```
 
-###### *NOTE: Must surround `quote` with quotation marks* <!-- markdownlint-disable-line MD001 -->
+###### _NOTE: Must surround `quote` with quotation marks_
 
 ### 📄 Documentation
 

@@ -2,10 +2,10 @@ import { join } from "node:path"
 
 import { error } from "@postfmly/logger"
 
-import { type Client, Events, type Interaction } from "discord.js"
+import { type Client, Events, type Interaction, MessageFlags } from "discord.js"
 
 interface IClientReady {
-  invoke: (client: Client) => Promise<void>
+  invoke: (client: Client<true>) => Promise<void>
 }
 
 interface IInteractionCreate {
@@ -13,17 +13,35 @@ interface IInteractionCreate {
 }
 
 export const loadCommands = async (client: Client): Promise<void> => {
-  const interactionCreate: IInteractionCreate = await import(join(import.meta.dir, `${Events.InteractionCreate}.ts`))
-  client.on(Events.InteractionCreate, async (interaction: Interaction): Promise<void> => {
-    try {
-      await interactionCreate.invoke(interaction)
-    } catch (e: unknown) {
-      error(`❌ ${"commandName" in interaction ? interaction.commandName : "Unknown"}:`, e)
-    }
+  const [interactionCreate, clientReady] = await Promise.all<[Promise<IInteractionCreate>, Promise<IClientReady>]>([
+    import(join(import.meta.dir, `${Events.InteractionCreate}.ts`)),
+    import(join(import.meta.dir, `${Events.ClientReady}.ts`))
+  ])
+
+  client.on(Events.InteractionCreate, (interaction: Interaction): void => {
+    interactionCreate.invoke(interaction).catch(async (e: unknown): Promise<void> => {
+      error(`❌ ${interaction.isCommand() ? interaction.commandName : "Unknown"}:`, e)
+
+      if (!interaction.isRepliable()) {
+        return
+      }
+
+      const payload = {
+        content: "There was an error while executing this command.",
+        flags: MessageFlags.Ephemeral
+      } as const
+
+      if (interaction.replied || interaction.deferred) {
+        await interaction.editReply(payload.content)
+      } else {
+        await interaction.reply(payload)
+      }
+    })
   })
 
-  const clientReady: IClientReady = await import(join(import.meta.dir, `${Events.ClientReady}.ts`))
-  client.once(Events.ClientReady, async (c: Client): Promise<void> => {
-    await clientReady.invoke(c)
+  client.once(Events.ClientReady, (c: Client<true>): void => {
+    clientReady.invoke(c).catch((e: unknown): void => {
+      error(`❌ ${Events.ClientReady}:`, e)
+    })
   })
 }

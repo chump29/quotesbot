@@ -1,0 +1,3 @@
+[test]
+coverageDir = "./tests/coverage"
+preload = ["./tests/setup.ts"]

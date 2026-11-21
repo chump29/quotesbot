@@ -4,7 +4,6 @@ FROM oven/bun:alpine AS build
 
 WORKDIR /app
 
-COPY .husky/prepare.min.mjs ./.husky/
 COPY patches/ ./patches/
 COPY package.json bun.lock ./
 
